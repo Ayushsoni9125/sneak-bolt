@@ -1,8 +1,10 @@
 import { SignJWT, jwtVerify } from 'jose';
 
-const JWT_SECRET_STRING =
-  process.env.JWT_SECRET || 'sneakerdrop_vault_secure_jwt_token_secret_key_2026_xyz';
-const SECRET_KEY = new TextEncoder().encode(JWT_SECRET_STRING);
+function getSecretKey(): Uint8Array {
+  const secret =
+    process.env.JWT_SECRET || 'sneakerdrop_vault_secure_jwt_token_secret_key_2026_xyz';
+  return new TextEncoder().encode(secret);
+}
 
 export interface TokenPayload {
   id: string;
@@ -27,7 +29,7 @@ export async function signJwtToken(payload: TokenPayload): Promise<string> {
     .setIssuer('sneakerdrop')
     .setAudience('sneakerdrop-vault')
     .setExpirationTime('7d')
-    .sign(SECRET_KEY);
+    .sign(getSecretKey());
 }
 
 /**
@@ -37,7 +39,7 @@ export async function verifyJwtToken(token: string): Promise<TokenPayload | null
   if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(token, SECRET_KEY, {
+    const { payload } = await jwtVerify(token, getSecretKey(), {
       issuer: 'sneakerdrop',
       audience: 'sneakerdrop-vault',
     });
