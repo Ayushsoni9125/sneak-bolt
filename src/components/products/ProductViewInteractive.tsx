@@ -270,12 +270,12 @@ export function ProductViewInteractive({ product }: Props) {
                 {isAdded ? (
                   <>
                     <Check className="h-4 w-4" />
-                    <span>ALLOCATED TO BAG</span>
+                    <span>ADDED TO CART</span>
                   </>
                 ) : (
                   <>
                     <span>
-                      ADD TO BAG • {formatPrice(product.price)}
+                      ADD TO CART • {formatPrice(product.price)}
                     </span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </>
@@ -419,7 +419,7 @@ export function ProductViewInteractive({ product }: Props) {
                 id="sticky-add-to-cart-btn"
                 className="px-6 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-mono uppercase tracking-[0.2em] transition-colors"
               >
-                {isAdded ? 'ALLOCATED' : 'ADD TO BAG'}
+                {isAdded ? 'ADDED TO CART' : 'ADD TO CART'}
               </button>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ProductCard } from '../ProductCard';
 import type { Product } from '@/types';
 
@@ -35,5 +35,16 @@ describe('ProductCard', () => {
     render(<ProductCard product={mockProduct} />);
 
     expect(screen.getByText('Available')).toBeInTheDocument();
+  });
+
+  it('renders Add to Cart button and updates state when clicked', () => {
+    render(<ProductCard product={mockProduct} />);
+
+    const addToCartBtn = screen.getByRole('button', { name: /add court one to cart/i });
+    expect(addToCartBtn).toBeInTheDocument();
+    expect(addToCartBtn).toHaveTextContent(/add to cart/i);
+
+    fireEvent.click(addToCartBtn);
+    expect(screen.getByText(/added to cart/i)).toBeInTheDocument();
   });
 });

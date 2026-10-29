@@ -97,9 +97,9 @@ export function CartDrawer() {
         <div className="p-6 border-b border-zinc-200 flex items-center justify-between bg-white">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-zinc-400">
-              VAULT SELECTION
+              SHOPPING CART
             </span>
-            <span className="text-sm font-bold text-zinc-950">
+            <span className="text-sm font-bold text-zinc-950 font-mono">
               [{totalCount}]
             </span>
           </div>
@@ -108,7 +108,7 @@ export function CartDrawer() {
             onClick={handleClose}
             id="close-cart-btn"
             className="p-2 text-zinc-400 hover:text-zinc-950 transition-colors rounded-none hover:bg-zinc-100"
-            aria-label="Close bag"
+            aria-label="Close cart"
           >
             <X className="h-4 w-4" />
           </button>
@@ -164,17 +164,17 @@ export function CartDrawer() {
           ) : items.length === 0 ? (
             <div className="py-20 text-center space-y-4">
               <p className="text-[11px] font-mono uppercase tracking-[0.25em] text-zinc-400">
-                BAG IS EMPTY
+                YOUR CART IS EMPTY
               </p>
               <p className="text-sm text-zinc-600 max-w-xs mx-auto">
-                No archival silhouettes currently allocated in your session.
+                No silhouettes currently in your cart. Add any available sneaker to get started.
               </p>
               <Link
                 href="/sneakers"
                 onClick={handleClose}
                 className="inline-flex items-center gap-2 mt-4 px-6 py-3 bg-zinc-950 text-white text-xs font-mono tracking-[0.2em] uppercase hover:bg-zinc-800 transition-colors"
               >
-                <span>EXPLORE VAULT [12]</span>
+                <span>EXPLORE SNEAKERS [12]</span>
                 <ArrowRight className="h-3 w-3" />
               </Link>
             </div>

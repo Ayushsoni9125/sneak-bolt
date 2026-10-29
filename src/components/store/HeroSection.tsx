@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Check } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
+import { useCart } from '@/context/CartContext';
 
 interface VaultSneaker {
   id: string;
@@ -117,7 +118,23 @@ export function HeroSection() {
     return () => clearInterval(timer);
   }, []);
 
+  const { addItem } = useCart();
+  const [heroAdded, setHeroAdded] = useState(false);
   const currentSneaker = PREMIUM_VAULT_SNEAKERS[currentIndex];
+
+  const handleHeroAddToCart = () => {
+    addItem({
+      id: currentSneaker.id,
+      name: currentSneaker.name,
+      slug: currentSneaker.slug,
+      price: currentSneaker.price,
+      image_url: currentSneaker.image,
+      size: 'US 9.5',
+      quantity: 1,
+    });
+    setHeroAdded(true);
+    setTimeout(() => setHeroAdded(false), 2000);
+  };
 
   return (
     <section className="relative bg-white pt-28 pb-12 sm:pt-36 sm:pb-16 lg:pt-40 lg:pb-24 border-b border-zinc-200/80 overflow-hidden">
@@ -149,21 +166,36 @@ export function HeroSection() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-8 sm:mb-10">
+              <button
+                type="button"
+                onClick={handleHeroAddToCart}
+                id="hero-add-to-cart-btn"
+                className={`inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 text-xs font-mono tracking-[0.2em] uppercase transition-all cursor-pointer ${
+                  heroAdded
+                    ? 'bg-emerald-600 text-white font-bold'
+                    : 'bg-zinc-950 hover:bg-zinc-800 text-white shadow-xs'
+                }`}
+              >
+                {heroAdded ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    <span>ADDED TO CART</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag className="h-4 w-4" />
+                    <span>ADD TO CART • {formatPrice(currentSneaker.price)}</span>
+                  </>
+                )}
+              </button>
+
               <Link
                 href="/sneakers"
                 id="hero-shop-cta"
-                className="inline-flex items-center justify-center gap-3 bg-zinc-950 hover:bg-zinc-800 text-white px-6 sm:px-8 py-3.5 sm:py-4 text-xs font-mono tracking-[0.2em] uppercase transition-colors"
-              >
-                <span>EXPLORE VAULT [12]</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-
-              <Link
-                href="/upcoming"
-                id="hero-upcoming-cta"
                 className="inline-flex items-center justify-center gap-3 bg-white hover:bg-zinc-50 border border-zinc-300 text-zinc-900 px-6 sm:px-8 py-3.5 sm:py-4 text-xs font-mono tracking-[0.2em] uppercase transition-colors"
               >
-                <span>RELEASE CALENDAR</span>
+                <span>EXPLORE ALL [12]</span>
+                <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
 
