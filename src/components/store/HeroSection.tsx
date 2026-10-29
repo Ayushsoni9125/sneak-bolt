@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
-import { Sneaker3DViewer } from '@/components/3d/Sneaker3DViewer';
 import { formatPrice } from '@/lib/utils';
 
 export function HeroSection() {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
-    <section className="relative bg-white pt-32 pb-16 lg:pt-38 lg:pb-24 border-b border-zinc-200/80 overflow-hidden">
+    <section className="relative bg-white pt-32 pb-16 lg:pt-40 lg:pb-24 border-b border-zinc-200/80 overflow-hidden">
       {/* Subtle architectural ambient backdrop */}
       <div className="absolute top-1/4 right-1/4 -z-10 h-[550px] w-[550px] rounded-full bg-zinc-100/70 blur-3xl opacity-70 pointer-events-none" />
 
@@ -71,35 +74,50 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right Column: Photorealistic 360° Sneaker Experience */}
+          {/* Right Column: Heroic Floating Sneaker (Zero grid, zero text clutter) */}
           <div className="lg:col-span-6 relative flex flex-col items-center justify-center">
-            {/* Seamless 360 Turntable & Tilt Container */}
-            <div className="w-full">
-              <Sneaker3DViewer autoRotate />
-            </div>
-
-            {/* Floating Silhouette Tag & Price in Rupees (₹) */}
-            <div className="mt-4 flex items-center justify-between w-full max-w-md px-2 text-xs font-mono">
-              <Link
-                href="/sneakers/court-one"
-                className="group flex items-center gap-2 text-zinc-950 hover:text-zinc-600 transition-colors"
-              >
-                <span className="font-bold uppercase tracking-tight">
-                  COURT ONE LUXURY
-                </span>
-                <span className="text-[10px] text-zinc-400 uppercase tracking-widest hidden sm:inline">
-                  {'//'} BONE LEATHER
-                </span>
-                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
-              </Link>
-
-              <div className="flex items-baseline gap-1 font-bold text-zinc-950">
-                <span className="text-sm font-mono">{formatPrice(28999)}</span>
-                <span className="text-[9px] text-zinc-400 font-normal uppercase tracking-wider">
-                  INR
-                </span>
+            <Link
+              href="/sneakers/court-one"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              className="group relative w-full flex flex-col items-center justify-center cursor-pointer select-none"
+              aria-label="View Court One Luxury"
+            >
+              {/* Floating Sneaker Image Container - Absolutely NO grid borders or boxes */}
+              <div className="relative w-full h-[360px] sm:h-[440px] lg:h-[480px] flex items-center justify-center transition-transform duration-700 ease-out group-hover:scale-105 group-hover:-translate-y-3">
+                <Image
+                  src={isHovered ? '/images/court-one-quarter.jpg' : '/images/court-one-hero.jpg'}
+                  alt="Court One Luxury Minimalist Court Sneaker"
+                  fill
+                  className="object-contain object-center transition-opacity duration-500"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
               </div>
-            </div>
+
+              {/* Natural Soft Ground Contact Shadow */}
+              <div className="w-3/4 h-8 bg-zinc-900/10 rounded-full blur-xl -mt-4 transition-all duration-700 group-hover:scale-95 group-hover:opacity-60" />
+
+              {/* Clean Minimalist Product Identifier Below */}
+              <div className="mt-6 flex items-center justify-between w-full max-w-md px-2 text-xs font-mono">
+                <div className="flex items-center gap-2 text-zinc-950 group-hover:text-zinc-600 transition-colors">
+                  <span className="font-bold uppercase tracking-wider">
+                    COURT ONE LUXURY
+                  </span>
+                  <span className="text-[10px] text-zinc-400 uppercase tracking-widest hidden sm:inline">
+                    {'//'} CHALK LEATHER
+                  </span>
+                  <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                </div>
+
+                <div className="flex items-baseline gap-1 font-bold text-zinc-950">
+                  <span className="text-sm font-mono">{formatPrice(28999)}</span>
+                  <span className="text-[9px] text-zinc-400 font-normal uppercase tracking-wider">
+                    INR
+                  </span>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </div>

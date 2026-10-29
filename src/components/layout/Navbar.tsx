@@ -62,9 +62,6 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
               <span className="text-base sm:text-lg font-black tracking-[0.18em] text-zinc-950 uppercase group-hover:text-zinc-600 transition-colors">
                 SNEAKERDROP
               </span>
-              <span className="hidden md:inline-block text-[10px] font-mono text-zinc-400 tracking-widest uppercase">
-                / ATELIER 2026
-              </span>
             </Link>
 
             {/* Desktop Navigation Links */}

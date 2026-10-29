@@ -10,14 +10,11 @@ import {
   ChevronDown,
   ArrowRight,
   Sparkles,
-  Box,
-  Camera,
 } from 'lucide-react';
 import type { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { AvailabilityBadge } from '@/components/products/AvailabilityBadge';
 import { WaitlistForm } from '@/components/forms/WaitlistForm';
-import { Sneaker3DViewer } from '@/components/3d/Sneaker3DViewer';
 import { formatPrice } from '@/lib/utils';
 
 interface Props {
@@ -35,7 +32,6 @@ const SIZES_DATA: Record<SizeSystem, string[]> = {
 
 export function ProductViewInteractive({ product }: Props) {
   const { addItem } = useCart();
-  const [viewMode, setViewMode] = useState<'3d' | 'gallery'>('3d');
   const [selectedAngle, setSelectedAngle] = useState(0);
   const [sizeSystem, setSizeSystem] = useState<SizeSystem>('US');
   const [selectedSize, setSelectedSize] = useState<string>('9.5');
@@ -91,82 +87,44 @@ export function ProductViewInteractive({ product }: Props) {
   return (
     <div className="relative">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-        {/* Left Column: Visual Showcase (Interactive 3D / Gallery) */}
+        {/* Left Column: Photorealistic Visual Showcase */}
         <div className="lg:col-span-7 flex flex-col gap-4">
-          {/* Mode Switcher (3D Model vs High-Res Photos) */}
-          <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
-            <div className="flex items-center gap-2 bg-zinc-100 p-1 border border-zinc-200 text-[10px] font-mono tracking-widest uppercase">
-              <button
-                onClick={() => setViewMode('3d')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 transition-all ${
-                  viewMode === '3d'
-                    ? 'bg-zinc-950 text-white font-bold shadow-xs'
-                    : 'text-zinc-600 hover:text-zinc-950'
-                }`}
-              >
-                <Box className="h-3 w-3" />
-                <span>3D INTERACTIVE [360°]</span>
-              </button>
-
-              <button
-                onClick={() => setViewMode('gallery')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 transition-all ${
-                  viewMode === 'gallery'
-                    ? 'bg-zinc-950 text-white font-bold shadow-xs'
-                    : 'text-zinc-600 hover:text-zinc-950'
-                }`}
-              >
-                <Camera className="h-3 w-3" />
-                <span>STUDIO GALLERY</span>
-              </button>
+          {/* Main Visual Stage - Clean Floating Sneaker Canvas (Zero grid border) */}
+          <div className="relative aspect-square w-full bg-white flex items-center justify-center group overflow-hidden">
+            <div className="relative w-full h-full flex items-center justify-center p-8 transition-transform duration-700 ease-out group-hover:scale-105 group-hover:-translate-y-2">
+              <Image
+                src={gallery[selectedAngle] || product.image_url}
+                alt={`${product.name} view ${selectedAngle + 1}`}
+                fill
+                className="object-contain object-center"
+                priority
+                sizes="(max-width: 1024px) 100vw, 60vw"
+              />
             </div>
 
-            <div className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase hidden sm:block">
+            {/* Natural Contact Drop Shadow */}
+            <div className="absolute bottom-6 inset-x-12 h-6 bg-zinc-900/10 rounded-full blur-xl -z-10 group-hover:scale-95 group-hover:opacity-50 transition-all duration-700" />
+
+            <div className="absolute top-4 left-4 z-10">
+              <AvailabilityBadge availability={product.availability} />
+            </div>
+
+            <div className="absolute top-4 right-4 z-10 text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
               {product.sku || 'REF: ARCHIVE'}
             </div>
           </div>
 
-          {/* Main Visual Stage */}
-          <div className="relative aspect-square w-full bg-[#f8f8f9] border border-zinc-200 overflow-hidden">
-            {viewMode === '3d' ? (
-              /* Full 3D Interactive Three.js Model */
-              <div className="w-full h-full flex items-center justify-center">
-                <Sneaker3DViewer autoRotate shoeName={product.name} />
-              </div>
-            ) : (
-              /* High-Res Studio Angle Gallery */
-              <div className="relative w-full h-full group">
-                <Image
-                  src={gallery[selectedAngle] || product.image_url}
-                  alt={`${product.name} view ${selectedAngle + 1}`}
-                  fill
-                  className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 60vw"
-                />
-
-                <div className="absolute top-4 left-4 z-10">
-                  <AvailabilityBadge availability={product.availability} />
-                </div>
-
-                <div className="absolute bottom-4 right-4 z-10 bg-white/90 backdrop-blur-xs px-2.5 py-1 border border-zinc-200 text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
-                  VIEW 0{selectedAngle + 1} / 0{gallery.length}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Multi-angle Thumbnails Filmstrip (when in gallery mode) */}
-          {viewMode === 'gallery' && gallery.length > 1 && (
-            <div className="grid grid-cols-4 gap-3">
+          {/* Multi-angle Thumbnails Filmstrip */}
+          {gallery.length > 1 && (
+            <div className="flex items-center gap-3">
               {gallery.map((img, idx) => (
                 <button
                   key={img + idx}
                   onClick={() => setSelectedAngle(idx)}
-                  className={`relative aspect-square bg-zinc-50 border transition-all duration-200 overflow-hidden ${
+                  className={`relative w-20 h-20 bg-white transition-all duration-200 overflow-hidden ${
                     selectedAngle === idx
-                      ? 'border-zinc-950 ring-1 ring-zinc-950 shadow-xs'
-                      : 'border-zinc-200 hover:border-zinc-400 opacity-70 hover:opacity-100'
+                      ? 'border-b-2 border-zinc-950 scale-105'
+                      : 'border-b border-transparent opacity-60 hover:opacity-100'
                   }`}
                   aria-label={`Switch to angle view ${idx + 1}`}
                 >
@@ -174,16 +132,14 @@ export function ProductViewInteractive({ product }: Props) {
                     src={img}
                     alt={`${product.name} thumbnail ${idx + 1}`}
                     fill
-                    className="object-cover object-center"
-                    sizes="120px"
+                    className="object-contain object-center p-1"
+                    sizes="80px"
                   />
-                  <span className="absolute bottom-1 left-1.5 text-[8px] font-mono text-zinc-600 bg-white/80 px-1">
-                    0{idx + 1}
-                  </span>
                 </button>
               ))}
             </div>
           )}
+
 
           {/* Minimalist Authenticity Bar */}
           <div className="grid grid-cols-3 divide-x divide-zinc-200 border border-zinc-200 py-3 px-2 bg-zinc-50/50 text-[11px] font-mono tracking-wider text-zinc-600 mt-2">
@@ -208,7 +164,7 @@ export function ProductViewInteractive({ product }: Props) {
           <div className="border-b border-zinc-200 pb-6 mb-6">
             <div className="flex items-center justify-between gap-4 mb-2">
               <span className="text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase">
-                {product.category || 'ATELIER SILHOUETTE'}
+                {product.category || 'VAULT SILHOUETTE'}
               </span>
               {product.stock_count && product.stock_count > 0 && (
                 <span className="text-[10px] font-mono tracking-widest text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 uppercase">
@@ -357,7 +313,7 @@ export function ProductViewInteractive({ product }: Props) {
                 onClick={() => toggleAccordion('materials')}
                 className="w-full flex items-center justify-between text-left text-xs font-mono uppercase tracking-[0.18em] text-zinc-950 font-bold py-1"
               >
-                <span>01 / ATELIER CRAFTSMANSHIP & MATERIALS</span>
+                <span>01 / CRAFTSMANSHIP & MATERIALS</span>
                 <ChevronDown
                   className={`h-3.5 w-3.5 transition-transform duration-200 ${
                     openAccordion === 'materials' ? 'rotate-180' : ''

@@ -36,12 +36,12 @@ export function CampaignBanner() {
               <span>TUSCAN OILED CALFSKIN</span>
             </div>
 
-            <div className="relative aspect-16/10 w-full overflow-hidden bg-zinc-50">
+            <div className="relative aspect-16/10 w-full overflow-hidden bg-white flex items-center justify-center p-6">
               <Image
-                src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1200&q=85"
-                alt="Obsidian Low Prime Atelier Study"
+                src="/images/obsidian-low.jpg"
+                alt="Obsidian Low Prime Study"
                 fill
-                className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                className="object-contain object-center transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 1024px) 100vw, 60vw"
               />
             </div>
@@ -72,7 +72,7 @@ export function CampaignBanner() {
             <div className="bg-white border border-zinc-200 p-6 flex flex-col justify-between flex-1">
               <div>
                 <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-400 uppercase mb-3">
-                  <span>ATELIER NOTE</span>
+                  <span>CRAFTSMANSHIP NOTE</span>
                   <span>MARGOM CUPSOLE</span>
                 </div>
                 <h4 className="text-sm font-black uppercase tracking-tight text-zinc-950">
@@ -84,7 +84,7 @@ export function CampaignBanner() {
               </div>
 
               <div className="mt-6 pt-4 border-t border-zinc-100 text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
-                GUARANTEED RE-SOLEABLE ATELIER SERVICE
+                GUARANTEED RE-SOLEABLE LIFETIME SERVICE
               </div>
             </div>
 

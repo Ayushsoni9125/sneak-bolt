@@ -40,26 +40,30 @@ export function UpcomingDrops({ products }: UpcomingDropsProps) {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14">
           {upcoming.map((product) => (
             <Link
               key={product.id}
               href={`/sneakers/${product.slug}`}
-              className="group flex flex-col sm:flex-row items-stretch bg-white border border-zinc-200 hover:border-zinc-950 transition-all duration-300"
+              className="group flex flex-col sm:flex-row items-center gap-6 bg-white transition-all duration-300"
             >
-              {/* Image thumbnail */}
-              <div className="relative aspect-square sm:w-48 sm:h-auto shrink-0 bg-[#f7f7f8] border-b sm:border-b-0 sm:border-r border-zinc-200 overflow-hidden">
-                <Image
-                  src={product.image_url}
-                  alt={product.name}
-                  fill
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, 200px"
-                />
+              {/* Floating Image Canvas - Zero box borders */}
+              <div className="relative w-full sm:w-56 h-48 shrink-0 flex items-center justify-center p-2">
+                <div className="relative w-full h-full flex items-center justify-center transition-transform duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+                  <Image
+                    src={product.image_url}
+                    alt={product.name}
+                    fill
+                    className="object-contain object-center"
+                    sizes="(max-width: 640px) 100vw, 240px"
+                  />
+                </div>
+                {/* Soft ground shadow */}
+                <div className="absolute bottom-2 inset-x-6 h-3 bg-zinc-900/10 rounded-full blur-sm -z-10 group-hover:scale-95 group-hover:opacity-40 transition-all duration-500" />
               </div>
 
               {/* Shoe Info */}
-              <div className="flex-1 p-6 flex flex-col justify-between">
+              <div className="flex-1 w-full flex flex-col justify-between py-2">
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <AvailabilityBadge availability={product.availability} />

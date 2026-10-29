@@ -5,7 +5,7 @@ import { ProductCard } from '@/components/products/ProductCard';
 import type { Availability, Product } from '@/types';
 
 export const metadata: Metadata = {
-  title: 'Vault Catalogue — SneakerDrop Atelier Archive',
+  title: 'Vault Catalogue — SneakerDrop Archive',
   description: 'Explore all 12 serialized SneakerDrop silhouettes. In-stock drops, sold-out vault grails, and upcoming limited releases.',
 };
 

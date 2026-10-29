@@ -4,7 +4,7 @@ import { ProductCard } from '@/components/products/ProductCard';
 import type { Product } from '@/types';
 
 export const metadata: Metadata = {
-  title: 'Release Calendar — SneakerDrop Atelier Archive',
+  title: 'Release Calendar — SneakerDrop Archive',
   description: 'Priority pre-registration for upcoming SneakerDrop releases. Access private checkout links before public launch.',
 };
 
@@ -35,7 +35,7 @@ export default async function UpcomingPage() {
             RELEASE CALENDAR
           </h1>
           <p className="text-xs sm:text-sm text-zinc-500 mt-3 max-w-lg font-sans">
-            These silhouettes are completing final atelier finishing. Register your email on each silhouette to receive an encrypted 15-minute checkout allocation prior to general release.
+            These silhouettes are completing final craftsmanship finishing. Register your email on each silhouette to receive an encrypted 15-minute checkout allocation prior to general release.
           </p>
         </div>
       </div>

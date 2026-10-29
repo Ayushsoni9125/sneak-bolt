@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${product.name} — SneakerDrop Atelier Archive`,
+    title: `${product.name} — SneakerDrop Archive`,
     description: product.description.slice(0, 155),
   };
 }

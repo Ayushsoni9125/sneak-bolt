@@ -15,7 +15,7 @@ export function Footer() {
                 SNEAKERDROP
               </span>
               <span className="block text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
-                ATELIER & ARCHIVE // EDITION 2026
+                ARCHIVE // EDITION 2026
               </span>
             </Link>
 
@@ -62,7 +62,7 @@ export function Footer() {
                 { href: '/login', label: 'SIGN IN' },
                 { href: '/signup', label: 'REGISTER VAULT' },
                 { href: '/account', label: 'LEDGER PROFILE' },
-                { href: '/admin', label: 'ATELIER CONSOLE' },
+                { href: '/admin', label: 'ADMIN CONSOLE' },
               ].map(({ href, label }) => (
                 <li key={label}>
                   <Link
