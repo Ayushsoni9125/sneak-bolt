@@ -23,6 +23,9 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
+    if (error.message?.toLowerCase().includes('email not confirmed')) {
+      return { error: 'Please check your email and click the confirmation link before signing in.' };
+    }
     return { error: 'Invalid email or password.' };
   }
 
@@ -55,10 +58,10 @@ export async function signup(formData: FormData) {
   });
 
   if (error) {
-    if (error.message.includes('already registered')) {
+    if (error.message?.includes('already registered')) {
       return { error: 'An account with this email already exists.' };
     }
-    return { error: 'Failed to create account. Please try again.' };
+    return { error: error.message || 'Failed to create account. Please try again.' };
   }
 
   return { success: 'Account created! Please check your email to confirm.' };
