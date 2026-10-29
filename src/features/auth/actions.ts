@@ -61,6 +61,11 @@ export async function signup(formData: FormData) {
     if (error.message?.includes('already registered')) {
       return { error: 'An account with this email already exists.' };
     }
+    if (error.message?.toLowerCase().includes('rate limit')) {
+      return {
+        error: 'Email rate limit reached (Supabase limits free projects to ~3 verification emails/hour). Turn off "Confirm email" in your Supabase Auth dashboard to test signups without limits.',
+      };
+    }
     return { error: error.message || 'Failed to create account. Please try again.' };
   }
 
