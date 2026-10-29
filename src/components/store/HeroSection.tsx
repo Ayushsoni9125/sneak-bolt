@@ -122,18 +122,21 @@ export function HeroSection() {
   const [heroAdded, setHeroAdded] = useState(false);
   const currentSneaker = PREMIUM_VAULT_SNEAKERS[currentIndex];
 
-  const handleHeroAddToCart = () => {
-    addItem({
-      id: currentSneaker.id,
-      name: currentSneaker.name,
-      slug: currentSneaker.slug,
-      price: currentSneaker.price,
-      image_url: currentSneaker.image,
-      size: 'US 9.5',
-      quantity: 1,
-    });
+  const handleHeroAddToCart = (openDrawer = false) => {
+    addItem(
+      {
+        id: currentSneaker.id,
+        name: currentSneaker.name,
+        slug: currentSneaker.slug,
+        price: currentSneaker.price,
+        image_url: currentSneaker.image,
+        size: 'US 9.5',
+        quantity: 1,
+      },
+      openDrawer
+    );
     setHeroAdded(true);
-    setTimeout(() => setHeroAdded(false), 2000);
+    setTimeout(() => setHeroAdded(false), 2500);
   };
 
   return (
@@ -166,36 +169,48 @@ export function HeroSection() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-8 sm:mb-10">
+              {/* 1. Add to Cart (Adds quietly, lets you keep exploring) */}
               <button
                 type="button"
-                onClick={handleHeroAddToCart}
+                onClick={() => handleHeroAddToCart(false)}
                 id="hero-add-to-cart-btn"
-                className={`inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 sm:py-4 text-xs font-mono tracking-[0.2em] uppercase transition-all cursor-pointer ${
+                className={`inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3.5 sm:py-4 text-xs font-mono tracking-[0.18em] uppercase transition-all cursor-pointer border ${
                   heroAdded
-                    ? 'bg-emerald-600 text-white font-bold'
-                    : 'bg-zinc-950 hover:bg-zinc-800 text-white shadow-xs'
+                    ? 'bg-emerald-50 border-emerald-600 text-emerald-800 font-bold'
+                    : 'bg-white hover:bg-zinc-50 border-zinc-950 text-zinc-950 shadow-xs'
                 }`}
               >
                 {heroAdded ? (
                   <>
-                    <Check className="h-4 w-4" />
+                    <Check className="h-4 w-4 text-emerald-600" />
                     <span>ADDED TO CART</span>
                   </>
                 ) : (
                   <>
                     <ShoppingBag className="h-4 w-4" />
-                    <span>ADD TO CART • {formatPrice(currentSneaker.price)}</span>
+                    <span>ADD TO CART</span>
                   </>
                 )}
               </button>
 
+              {/* 2. Proceed to Order (Direct checkout flow, opens Cart Drawer) */}
+              <button
+                type="button"
+                onClick={() => handleHeroAddToCart(true)}
+                id="hero-proceed-order-btn"
+                className="inline-flex items-center justify-center gap-2.5 bg-zinc-950 hover:bg-zinc-800 text-white px-6 sm:px-8 py-3.5 sm:py-4 text-xs font-mono tracking-[0.2em] uppercase transition-colors cursor-pointer shadow-xs"
+              >
+                <span>PROCEED TO ORDER • {formatPrice(currentSneaker.price)}</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+
+              {/* 3. Explore Vault Catalog */}
               <Link
                 href="/sneakers"
                 id="hero-shop-cta"
-                className="inline-flex items-center justify-center gap-3 bg-white hover:bg-zinc-50 border border-zinc-300 text-zinc-900 px-6 sm:px-8 py-3.5 sm:py-4 text-xs font-mono tracking-[0.2em] uppercase transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-transparent hover:bg-zinc-100 text-zinc-600 hover:text-zinc-950 px-4 py-3.5 text-xs font-mono tracking-[0.15em] uppercase transition-colors"
               >
                 <span>EXPLORE ALL [12]</span>
-                <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
 

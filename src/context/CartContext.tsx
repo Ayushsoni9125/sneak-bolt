@@ -11,7 +11,7 @@ interface CartContextValue {
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
-  addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void;
+  addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }, openDrawer?: boolean) => void;
   removeItem: (id: string, size: string) => void;
   updateQuantity: (id: string, size: string, quantity: number) => void;
   clearCart: () => void;
@@ -57,7 +57,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const closeCart = () => setIsOpen(false);
   const toggleCart = () => setIsOpen((prev) => !prev);
 
-  const addItem = (newItem: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
+  const addItem = (
+    newItem: Omit<CartItem, 'quantity'> & { quantity?: number },
+    openDrawer: boolean = false
+  ) => {
     const qty = newItem.quantity ?? 1;
     setItems((current) => {
       const existingIndex = current.findIndex(
@@ -73,7 +76,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...current, { ...newItem, quantity: qty }];
     });
-    setIsOpen(true);
+
+    if (openDrawer) {
+      setIsOpen(true);
+    }
   };
 
   const removeItem = (id: string, size: string) => {

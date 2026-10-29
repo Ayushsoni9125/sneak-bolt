@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ArrowRight,
   Sparkles,
+  ShoppingBag,
 } from 'lucide-react';
 import type { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
@@ -31,7 +32,7 @@ const SIZES_DATA: Record<SizeSystem, string[]> = {
 };
 
 export function ProductViewInteractive({ product }: Props) {
-  const { addItem } = useCart();
+  const { addItem, openCart } = useCart();
   const [selectedAngle, setSelectedAngle] = useState(0);
   const [sizeSystem, setSizeSystem] = useState<SizeSystem>('US');
   const [selectedSize, setSelectedSize] = useState<string>('9.5');
@@ -58,26 +59,29 @@ export function ProductViewInteractive({ product }: Props) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (openDrawer = false) => {
     if (!selectedSize) {
       setSizeError(true);
       return;
     }
     setSizeError(false);
 
-    addItem({
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      price: product.price,
-      image_url: product.image_url,
-      size: `${sizeSystem} ${selectedSize}`,
-      colorway: product.colorway,
-      quantity: 1,
-    });
+    addItem(
+      {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        price: product.price,
+        image_url: product.image_url,
+        size: `${sizeSystem} ${selectedSize}`,
+        colorway: product.colorway,
+        quantity: 1,
+      },
+      openDrawer
+    );
 
     setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+    setTimeout(() => setIsAdded(false), 2500);
   };
 
   const toggleAccordion = (key: string) => {
@@ -257,30 +261,60 @@ export function ProductViewInteractive({ product }: Props) {
                 )}
               </div>
 
-              {/* Add to Cart CTA with Rupees */}
-              <button
-                onClick={handleAddToCart}
-                id="add-to-cart-btn"
-                className={`w-full py-4 text-xs font-mono uppercase tracking-[0.25em] flex items-center justify-center gap-3 transition-all duration-200 ${
-                  isAdded
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-zinc-950 hover:bg-zinc-800 text-white shadow-sm'
-                }`}
-              >
-                {isAdded ? (
-                  <>
-                    <Check className="h-4 w-4" />
-                    <span>ADDED TO CART</span>
-                  </>
-                ) : (
-                  <>
-                    <span>
-                      ADD TO CART • {formatPrice(product.price)}
+              {/* Two Distinct Actions: Add to Cart vs Proceed to Order */}
+              <div className="space-y-3 pt-2">
+                {/* 1. Add to Cart (Quietly adds to cart without forcing cart drawer open) */}
+                <button
+                  type="button"
+                  onClick={() => handleAddToCart(false)}
+                  id="add-to-cart-btn"
+                  className={`w-full py-3.5 text-xs font-mono uppercase tracking-[0.2em] flex items-center justify-center gap-2.5 border transition-all duration-200 cursor-pointer ${
+                    isAdded
+                      ? 'bg-emerald-50 border-emerald-600 text-emerald-800 font-bold'
+                      : 'bg-white hover:bg-zinc-50 border-zinc-950 text-zinc-950 shadow-xs'
+                  }`}
+                >
+                  {isAdded ? (
+                    <>
+                      <Check className="h-4 w-4 text-emerald-600" />
+                      <span>ADDED TO CART (SIZE {sizeSystem} {selectedSize})</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag className="h-4 w-4" />
+                      <span>ADD TO CART</span>
+                    </>
+                  )}
+                </button>
+
+                {/* 2. Proceed to Order (Direct checkout flow, opens Cart Drawer ready for checkout) */}
+                <button
+                  type="button"
+                  onClick={() => handleAddToCart(true)}
+                  id="proceed-to-order-btn"
+                  className="w-full py-4 bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-mono uppercase tracking-[0.25em] flex items-center justify-center gap-3 transition-all duration-200 shadow-sm cursor-pointer"
+                >
+                  <span>PROCEED TO ORDER • {formatPrice(product.price)}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+
+                {/* Inline Confirmation with direct View Cart option */}
+                {isAdded && (
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-mono flex items-center justify-between animate-in fade-in duration-200">
+                    <span className="flex items-center gap-2">
+                      <Check className="h-3.5 w-3.5 text-emerald-700" />
+                      <span>{product.name} ({sizeSystem} {selectedSize}) is in your cart.</span>
                     </span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </>
+                    <button
+                      type="button"
+                      onClick={() => openCart()}
+                      className="underline font-bold hover:text-emerald-950 uppercase text-[11px] cursor-pointer"
+                    >
+                      VIEW CART →
+                    </button>
+                  </div>
                 )}
-              </button>
+              </div>
             </div>
           ) : product.availability === 'upcoming' ? (
             <div className="p-5 border border-zinc-200 bg-zinc-50 space-y-4">
@@ -413,13 +447,22 @@ export function ProductViewInteractive({ product }: Props) {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
-                onClick={handleAddToCart}
-                id="sticky-add-to-cart-btn"
-                className="px-6 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-mono uppercase tracking-[0.2em] transition-colors"
+                type="button"
+                onClick={() => handleAddToCart(false)}
+                className="hidden sm:inline-flex px-4 py-2.5 border border-zinc-950 bg-white hover:bg-zinc-50 text-zinc-950 text-xs font-mono uppercase tracking-[0.18em] transition-colors cursor-pointer"
               >
-                {isAdded ? 'ADDED TO CART' : 'ADD TO CART'}
+                {isAdded ? 'ADDED ✓' : 'ADD TO CART'}
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAddToCart(true)}
+                id="sticky-add-to-cart-btn"
+                className="px-5 sm:px-6 py-2.5 bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-mono uppercase tracking-[0.2em] transition-colors flex items-center gap-2 cursor-pointer"
+              >
+                <span>PROCEED TO ORDER</span>
+                <ArrowRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
