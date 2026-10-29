@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Pencil, Trash2, Loader2, ChevronDown } from 'lucide-react';
 import { deleteProduct, updateAvailability } from '@/features/products/actions';
 import { AvailabilityBadge } from '@/components/products/AvailabilityBadge';
+import { formatPrice } from '@/lib/utils';
 import type { Product, Availability } from '@/types';
 
 interface AdminProductTableProps {
@@ -107,7 +108,7 @@ export function AdminProductTable({ products }: AdminProductTableProps) {
 
                   {/* Price */}
                   <td className="px-4 py-4 text-foreground font-medium">
-                    ${product.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    {formatPrice(product.price, true)}
                   </td>
 
                   {/* Availability */}

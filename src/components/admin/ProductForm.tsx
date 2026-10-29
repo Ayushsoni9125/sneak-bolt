@@ -103,7 +103,7 @@ export function ProductForm({ product, onSubmit, submitLabel }: ProductFormProps
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="product-price" className={labelClass}>
-            Price (USD) *
+            Price (₹ / INR) *
           </label>
           <input
             id="product-price"
@@ -113,7 +113,7 @@ export function ProductForm({ product, onSubmit, submitLabel }: ProductFormProps
             min="0.01"
             required
             defaultValue={product?.price}
-            placeholder="195.00"
+            placeholder="28999.00"
             className={inputClass}
           />
         </div>
