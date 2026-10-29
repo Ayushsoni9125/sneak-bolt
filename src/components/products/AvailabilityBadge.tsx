@@ -17,11 +17,19 @@ export function AvailabilityBadge({
   return (
     <span
       className={cn(
-        'label-xs px-2.5 py-1 rounded-sm',
+        'inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-2xs transition-all',
         `availability-${availability}`,
         className
       )}
     >
+      <span
+        className={cn(
+          'h-1.5 w-1.5 rounded-full',
+          availability === 'available' && 'bg-emerald-500 animate-pulse',
+          availability === 'sold_out' && 'bg-zinc-400',
+          availability === 'upcoming' && 'bg-amber-500'
+        )}
+      />
       {labels[availability]}
     </span>
   );
