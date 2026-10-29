@@ -207,7 +207,7 @@ export function HeroSection() {
                 aria-label={`View ${currentSneaker.name}`}
               >
                 {/* Floating Sneaker Image Container with Smooth Crossfade */}
-                <div className="relative w-full h-[280px] sm:h-[390px] lg:h-[460px] flex items-center justify-center">
+                <div className="relative w-full h-[240px] sm:h-[390px] lg:h-[460px] flex items-center justify-center">
                   <div
                     className={`relative w-full h-full flex items-center justify-center transition-all duration-700 ease-out ${
                       isTransitioning
@@ -221,31 +221,31 @@ export function HeroSection() {
                       fill
                       className="object-contain object-center transition-opacity duration-500"
                       priority
-                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 70vw, 50vw"
                     />
                   </div>
                 </div>
 
                 {/* Natural Soft Ground Contact Shadow */}
                 <div
-                  className={`w-3/4 h-6 sm:h-8 bg-zinc-900/10 rounded-full blur-xl -mt-2 sm:-mt-4 transition-all duration-700 ${
+                  className={`w-3/4 h-5 sm:h-8 bg-zinc-900/10 rounded-full blur-xl -mt-2 sm:-mt-4 transition-all duration-700 ${
                     isTransitioning ? 'opacity-20 scale-85' : 'opacity-60 scale-100'
                   } group-hover:scale-95 group-hover:opacity-40`}
                 />
 
                 {/* Clean Minimalist Product Identifier Below */}
-                <div className="mt-4 sm:mt-5 flex items-center justify-between w-full max-w-md px-2 text-xs font-mono">
-                  <div className="flex items-center gap-2 text-zinc-950 group-hover:text-zinc-600 transition-colors">
-                    <span className="font-bold uppercase tracking-wider text-[11px] sm:text-xs">
+                <div className="mt-4 sm:mt-5 flex items-center justify-between w-full max-w-md px-1 sm:px-2 text-xs font-mono">
+                  <div className="flex items-center gap-1.5 sm:gap-2 text-zinc-950 group-hover:text-zinc-600 transition-colors min-w-0">
+                    <span className="font-bold uppercase tracking-wider text-[10px] sm:text-xs truncate">
                       {currentSneaker.name}
                     </span>
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-widest hidden sm:inline truncate max-w-[170px]">
+                    <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase tracking-widest hidden sm:inline truncate max-w-[150px]">
                       {`// ${currentSneaker.edition.split('//')[0]?.trim()}`}
                     </span>
                     <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1 shrink-0" />
                   </div>
 
-                  <div className="flex items-baseline gap-1 font-bold text-zinc-950 shrink-0">
+                  <div className="flex items-baseline gap-1 font-bold text-zinc-950 shrink-0 ml-2">
                     <span className="text-xs sm:text-sm font-mono">
                       {formatPrice(currentSneaker.price)}
                     </span>

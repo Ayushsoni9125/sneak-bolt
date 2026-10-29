@@ -55,7 +55,7 @@ export default function LoginPage() {
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5 text-[10px] font-mono">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 text-[10px] font-mono">
             {/* Admin (Curator) */}
             <div className="bg-zinc-900 border border-zinc-800 p-2.5 rounded-sm flex flex-col justify-between">
               <div>
