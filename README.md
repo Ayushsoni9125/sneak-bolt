@@ -4,6 +4,17 @@ SneakerDrop is a modern, editorial e-commerce showcase for limited-edition sneak
 
 ---
 
+## ⚡ Live Demo & Evaluator Credentials
+
+When reviewing the live link or testing role-based access, use these credentials directly or use the **1-click Auto-Fill buttons** on the [`/login`](/login) page:
+
+| Role | Email Address | Password | Permissions & Features |
+| :--- | :--- | :--- | :--- |
+| **Admin (Curator)** | `admin@sneakerdrop.internal` | `AdminPassword123!` | Full access to Admin Console (`/admin`), Customer Orders (`/admin/orders`), Product Management (`/admin/products`), Waitlist (`/admin/waitlist`) |
+| **Collector (User)** | `collector@sneakerdrop.internal` | `CollectorPassword123!` | Full Storefront discovery, 3D interactive viewer, Shopping bag checkout, Acquisition Ledger & Order History (`/account`) |
+
+---
+
 ## Features
 
 ### Dynamic Sneaker Catalogue

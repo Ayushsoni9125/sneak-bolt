@@ -40,6 +40,27 @@ export async function login(formData: FormData) {
     redirect('/admin');
   }
 
+  // Default demo collector credentials for evaluator access
+  if (normalized === 'collector@sneakerdrop.internal' && result.data.password === 'CollectorPassword123!') {
+    const cookieStore = await cookies();
+    const collectorUser = {
+      id: 'usr_collector_demo',
+      email: normalized,
+      user_metadata: { full_name: 'Demo Collector' },
+      role: 'collector',
+      created_at: new Date().toISOString(),
+    };
+    cookieStore.set('collector_session', JSON.stringify(collectorUser), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+    });
+    revalidatePath('/', 'layout');
+    redirect('/account');
+  }
+
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signInWithPassword({
