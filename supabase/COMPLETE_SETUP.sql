@@ -39,6 +39,18 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
+-- Convenient public.users view so users appear directly in Table Editor
+create or replace view public.users as
+select
+  p.id,
+  u.email,
+  p.full_name,
+  p.role,
+  u.created_at,
+  u.last_sign_in_at
+from public.profiles p
+left join auth.users u on u.id = p.id;
+
 -- 3. Products table
 create table if not exists public.products (
   id           uuid primary key default uuid_generate_v4(),
