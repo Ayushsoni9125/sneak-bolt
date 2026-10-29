@@ -10,7 +10,7 @@ create extension if not exists "uuid-ossp";
 create table if not exists public.profiles (
   id          uuid primary key references auth.users(id) on delete cascade,
   full_name   text,
-  role        text not null default 'user' check (role in ('user', 'admin')),
+  role        text not null default 'collector' check (role in ('collector', 'user', 'admin')),
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
@@ -25,9 +25,11 @@ begin
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'full_name', ''),
-    'user'
+    coalesce(new.raw_user_meta_data->>'role', 'collector')
   )
-  on conflict (id) do nothing;
+  on conflict (id) do update set
+    full_name = coalesce(new.raw_user_meta_data->>'full_name', public.profiles.full_name),
+    role = coalesce(new.raw_user_meta_data->>'role', public.profiles.role);
   return new;
 end;
 $$;
@@ -132,116 +134,116 @@ create policy "Admins can view waitlist" on public.waitlist for select using (
   exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
 );
 
--- 6. Seed all 12 Sneaker releases
+-- 7. Seed all 12 Sneaker releases
 insert into public.products (id, name, slug, description, price, image_url, availability)
 values
   (
     'a1b2c3d4-0001-0001-0001-000000000001',
     'Court One Luxury',
     'court-one',
-    'The Court One is where legacy begins. Crafted from premium full-grain Italian leather with a vulcanised rubber outsole, it carries decades of heritage into every step. Features tonal waxed cotton laces and an ultra-plush memory foam insole.',
+    'Engineered in Civitanova Marche, Italy. The Court One combines full-grain Tuscan calfskin with an Italian Margom vulcanised rubber cupsole. Hand-buffed tonal waxed cotton laces and an anatomic calf-lined footbed provide peerless comfort.',
     28999.00,
-    'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000&q=85',
+    '/images/court-one-hero.jpg',
     'available'
   ),
   (
     'a1b2c3d4-0002-0002-0002-000000000002',
     'Shadow High Archive',
     'shadow-high',
-    'Born in the shadows, built for the spotlight. The Shadow High features an extended ankle collar, hand-stitched Japanese nubuck panels, and a carbon-fibre shank plate. Its muted monochrome palette makes it the most sought-after drop in our archive.',
-    285.00,
-    'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1000&q=85',
-    'sold_out'
+    'Archival high-collar court silhouette handcrafted from oiled Japanese nubuck with carbon-fibre midfoot torsion shanks. Features custom matte-black metal eyelets and a serialized NFC verification tag embedded in the tongue.',
+    34999.00,
+    '/images/shadow-high.jpg',
+    'available'
   ),
   (
     'a1b2c3d4-0003-0003-0003-000000000003',
     'Velocity Neo',
     'velocity',
-    'Speed redefined. The Velocity Neo breaks the mould with an ultra-light aerodynamic knit chassis, asymmetric lock-down lacing, and dual-density supercritical foam. Drop incoming — join the waitlist to secure priority release access.',
-    320.00,
-    'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=1000&q=85',
-    'upcoming'
+    'Kinetic propulsion racer. Constructed with an ultra-light aerodynamic mono-weave knit upper, asymmetric lock-down cabling, and dual-density supercritical foam dampening. Releasing in strict batch runs.',
+    24500.00,
+    '/images/velocity.jpg',
+    'available'
   ),
   (
     'a1b2c3d4-0004-0004-0004-000000000004',
     'Obsidian Low Prime',
     'obsidian-low',
-    'Dark materials, razor-sharp execution. The Obsidian Low is precision-cut from oiled tumbled leather with reinforced topstitching and a gum rubber cupsole. Versatile, durable, and uncompromisingly understated.',
-    215.00,
-    'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&q=85',
+    'Minimalist luxury perfected. Precision-cut from tumbled French calfskin with reinforced double-stitch paneling, raw suede lining, and a bespoke natural gum cupsole. Subtle debossed serial numbering on lateral heel.',
+    26000.00,
+    '/images/obsidian-low.jpg',
     'available'
   ),
   (
     'a1b2c3d4-0005-0005-0005-000000000005',
     'Meridian Sculpt Runner',
     'meridian-runner',
-    'Archival 90s running DNA fused with modern street architecture. An open-cell technical mesh upper over a sculpted architectural midsole creates all-day comfort. Dropping in limited quantities worldwide.',
-    240.00,
-    'https://images.unsplash.com/photo-1584735175315-9d5df23860e6?w=1000&q=85',
-    'upcoming'
+    'Architectural sculpted geometry. Designed with an open-cell technical spacer mesh core layered over an exaggerated dual-density chassis. Delivers sculptural presence without compromising lightweight comfort.',
+    32000.00,
+    '/images/meridian-runner.jpg',
+    'available'
   ),
   (
     'a1b2c3d4-0006-0006-0006-000000000006',
     'Element Zero Prototype',
     'element-zero',
-    'A study in reduction. Stripped of all superfluous branding, the Element Zero pairs matte technical nylon with raw calfskin overlays on a modular split-sole platform. Strictly limited release — now entirely sold out.',
-    360.00,
-    'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=1000&q=85',
-    'sold_out'
+    'Deconstructivist luxury footwear. Stripped of all superfluous ornament, the Element Zero pairs matte technical ballistic nylon with raw vegetable-tanned overlays on a decoupled split-sole platform. Strictly numbered edition of 250 pairs.',
+    38500.00,
+    '/images/element-zero.jpg',
+    'available'
   ),
   (
     'a1b2c3d4-0007-0007-0007-000000000007',
     'Apex Trail 90',
     'apex-trail-90',
-    'Gorpcore meets luxury. Engineered with waterproof Cordura mesh, quick-pull Kevlar speed lacing, and an aggressive Vibram Megagrip lugged outsole for seamless transitions between alpine trails and city streets.',
-    275.00,
-    'https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?w=1000&q=85',
-    'available'
+    'Gorpcore redefined through luxury design techniques. Waterproof Cordura 500D chassis with bonded TPU mudguards, Kevlar speed lacing, and an aggressive Vibram Megagrip lugged outsole.',
+    27500.00,
+    '/images/apex-trail.jpg',
+    'upcoming'
   ),
   (
     'a1b2c3d4-0008-0008-0008-000000000008',
     'Ghost Knit Retro',
     'ghost-knit-retro',
-    'Effortless lightweight lifestyle silhouette. Constructed with a seamless mono-weave jacquard knit upper that hugs your foot like a second skin, anchored by responsive air-infused cushioning.',
-    185.00,
-    'https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=1000&q=85',
-    'available'
+    'Seamless mono-weave jacquard knit upper hugs the contours of the foot like a bespoke second skin. Features an unlined tongue, French terry collar, and an energy-rebounding nitrogen-infused capsule bed.',
+    23500.00,
+    '/images/ghost-knit.jpg',
+    'upcoming'
   ),
   (
     'a1b2c3d4-0009-0009-0009-000000000009',
     'Komorebi Luxe Edition',
     'komorebi-luxe',
-    'An artisan collaboration combining Okayama selvedge denim, vegetable-tanned Vachetta leather, and hand-burnished brass hardware. Aged to perfection as you wear it. Limited to 300 numbered pairs.',
-    345.00,
-    'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=1000&q=85',
+    'Inspired by sunlight filtering through natural canopies. Crafted from artisanal 14oz Okayama selvedge denim, natural sashiko hand-stitching, and an indigo-dipped vegetable tanned heel tab.',
+    33000.00,
+    '/images/komorebi-luxe.jpg',
     'upcoming'
   ),
   (
     'a1b2c3d4-0010-0010-0010-000000000010',
     'Stratum Low Deconstruct',
     'stratum-low',
-    'Inside-out construction. Exposed foam tongues, inverted seams, and hand-distressed detailing make the Stratum Low a raw, sculptural masterwork. Sold out worldwide within minutes of its original drop.',
-    230.00,
-    'https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?w=1000&q=85',
-    'sold_out'
+    'Raw-edge layered English suede with exposed foam borders and asymmetric perforations across the medial quarter. Finished with a semi-translucent smoke crystal cupsole and waxed linen laces.',
+    29500.00,
+    '/images/stratum-low.jpg',
+    'upcoming'
   ),
   (
     'a1b2c3d4-0011-0011-0011-000000000011',
     'Vortex Prime Sprint',
     'vortex-prime',
-    'High-performance energy return wrapped in runway aesthetics. Features nitrogen-infused foam propulsion rods, breathable TPU film reinforcements, and a reflective 3M heel counter.',
-    295.00,
-    'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1000&q=85',
-    'available'
+    'Engineered for track and pavement speed trials. Features a featherlight mono-filament composite shell with metallic graphite finish and an energy-returning carbon fiber sprint plate.',
+    26500.00,
+    '/images/vortex-prime.jpg',
+    'sold_out'
   ),
   (
     'a1b2c3d4-0012-0012-0012-000000000012',
-    'Hyperion High 88',
+    'Chalk Court 88 Studio',
     'hyperion-high-88',
-    'Golden era hardwood prestige. Re-engineered to 1988 factory specifications with heavy-gauge top-grain leather, padded ankle collars, and an authentic pre-aged tea-stained midsole. Releasing next month.',
-    410.00,
-    'https://images.unsplash.com/photo-1512374382149-233c42b6a83b?w=1000&q=85',
-    'upcoming'
+    'Archival 1988 pro court championship silhouette reissued with modern internal ergonomics. Heavyweight 2.2mm full-grain leather, padded collar, and vintage off-white aged cupsole finish. Limited collector edition.',
+    36999.00,
+    '/images/court-one-profile.jpg',
+    'sold_out'
   )
 on conflict (id) do update set
   name = excluded.name,
