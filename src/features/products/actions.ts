@@ -3,9 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { isAdmin } from '@/features/auth/actions';
-import { productSchema, productFormSchema } from '@/lib/validations';
+import { productSchema, productFormSchema, idSchema, sanitizeText } from '@/lib/validations';
 import { FALLBACK_PRODUCTS } from '@/data/seed-products';
 import type { Product } from '@/types';
+import { z } from 'zod';
+
+const availabilityEnum = z.enum(['available', 'sold_out', 'upcoming']);
 
 // ── Read ─────────────────────────────────────────────────────────────────────
 
@@ -25,35 +28,37 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const cleanSlug = sanitizeText(slug);
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .eq('slug', slug)
+      .eq('slug', cleanSlug)
       .single();
 
     if (!error && data) return data;
   } catch {
     // fallback to seed catalog
   }
-  return FALLBACK_PRODUCTS.find((p) => p.slug === slug) ?? null;
+  return FALLBACK_PRODUCTS.find((p) => p.slug === cleanSlug) ?? null;
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
+  const cleanId = sanitizeText(id);
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .eq('id', id)
+      .eq('id', cleanId)
       .single();
 
     if (!error && data) return data;
   } catch {
     // fallback to seed catalog
   }
-  return FALLBACK_PRODUCTS.find((p) => p.id === id) ?? null;
+  return FALLBACK_PRODUCTS.find((p) => p.id === cleanId) ?? null;
 }
 
 // ── Admin mutations (server-verified authorization) ──────────────────────────
@@ -64,11 +69,11 @@ export async function createProduct(formData: FormData) {
   }
 
   const rawData = {
-    name: formData.get('name') as string,
-    slug: formData.get('slug') as string,
-    description: formData.get('description') as string,
+    name: sanitizeText(formData.get('name') as string),
+    slug: sanitizeText(formData.get('slug') as string),
+    description: sanitizeText(formData.get('description') as string),
     price: formData.get('price') as string,
-    image_url: formData.get('image_url') as string,
+    image_url: (formData.get('image_url') as string)?.trim(),
     availability: formData.get('availability') as string,
   };
 
@@ -108,12 +113,17 @@ export async function updateProduct(id: string, formData: FormData) {
     return { error: 'Unauthorized: Admin access required.' };
   }
 
+  const idCheck = idSchema.safeParse(id);
+  if (!idCheck.success) {
+    return { error: 'Invalid product identifier.' };
+  }
+
   const rawData = {
-    name: formData.get('name') as string,
-    slug: formData.get('slug') as string,
-    description: formData.get('description') as string,
+    name: sanitizeText(formData.get('name') as string),
+    slug: sanitizeText(formData.get('slug') as string),
+    description: sanitizeText(formData.get('description') as string),
     price: formData.get('price') as string,
-    image_url: formData.get('image_url') as string,
+    image_url: (formData.get('image_url') as string)?.trim(),
     availability: formData.get('availability') as string,
   };
 
@@ -136,7 +146,7 @@ export async function updateProduct(id: string, formData: FormData) {
   const { error } = await supabase
     .from('products')
     .update({ ...validResult.data, updated_at: new Date().toISOString() })
-    .eq('id', id);
+    .eq('id', idCheck.data);
 
   if (error) {
     if (error.code === '23505') {
@@ -157,8 +167,13 @@ export async function deleteProduct(id: string) {
     return { error: 'Unauthorized: Admin access required.' };
   }
 
+  const idCheck = idSchema.safeParse(id);
+  if (!idCheck.success) {
+    return { error: 'Invalid product identifier.' };
+  }
+
   const supabase = await createClient();
-  const { error } = await supabase.from('products').delete().eq('id', id);
+  const { error } = await supabase.from('products').delete().eq('id', idCheck.data);
 
   if (error) {
     if (error.code === '23503') {
@@ -184,11 +199,21 @@ export async function updateAvailability(
     return { error: 'Unauthorized: Admin access required.' };
   }
 
+  const idCheck = idSchema.safeParse(id);
+  if (!idCheck.success) {
+    return { error: 'Invalid product identifier.' };
+  }
+
+  const availabilityCheck = availabilityEnum.safeParse(availability);
+  if (!availabilityCheck.success) {
+    return { error: 'Invalid availability state.' };
+  }
+
   const supabase = await createClient();
   const { error } = await supabase
     .from('products')
-    .update({ availability, updated_at: new Date().toISOString() })
-    .eq('id', id);
+    .update({ availability: availabilityCheck.data, updated_at: new Date().toISOString() })
+    .eq('id', idCheck.data);
 
   if (error) return { error: 'Failed to update availability.' };
 

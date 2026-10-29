@@ -3,6 +3,9 @@ import { SignJWT, jwtVerify } from 'jose';
 function getSecretKey(): Uint8Array {
   const secret =
     process.env.JWT_SECRET || 'sneakerdrop_vault_secure_jwt_token_secret_key_2026_xyz';
+  if (process.env.NODE_ENV === 'production' && secret.length < 32) {
+    throw new Error('SECURITY CONFIGURATION ERROR: JWT_SECRET must be at least 32 characters in production.');
+  }
   return new TextEncoder().encode(secret);
 }
 
@@ -34,9 +37,10 @@ export async function signJwtToken(payload: TokenPayload): Promise<string> {
 
 /**
  * Cryptographically verifies a JWT token. Returns decoded payload or null if invalid/expired.
+ * Strict cryptographic signature check only: unsigned or malformed tokens are rejected.
  */
 export async function verifyJwtToken(token: string): Promise<TokenPayload | null> {
-  if (!token) return null;
+  if (!token || typeof token !== 'string') return null;
 
   try {
     const { payload } = await jwtVerify(token, getSecretKey(), {
@@ -44,27 +48,22 @@ export async function verifyJwtToken(token: string): Promise<TokenPayload | null
       audience: 'sneakerdrop-vault',
     });
 
+    const id = (payload.id as string) || (payload.sub as string);
+    const email = payload.email as string;
+    const role = payload.role === 'admin' ? 'admin' : 'collector';
+
+    if (!id || !email) {
+      return null;
+    }
+
     return {
-      id: (payload.id as string) || (payload.sub as string),
-      email: payload.email as string,
-      role: (payload.role as 'admin' | 'collector') || 'collector',
+      id,
+      email,
+      role,
       full_name: (payload.full_name as string) || '',
     };
   } catch {
-    // If not a valid JWT (or legacy JSON format during transition), try safe JSON parsing
-    try {
-      const parsed = JSON.parse(token);
-      if (parsed && (parsed.id || parsed.email)) {
-        return {
-          id: parsed.id || 'usr_' + Date.now(),
-          email: parsed.email || '',
-          role: parsed.role === 'admin' ? 'admin' : 'collector',
-          full_name: parsed.user_metadata?.full_name || parsed.full_name || '',
-        };
-      }
-    } catch {
-      // not JSON either
-    }
+    // Cryptographic signature verification failed or token expired
     return null;
   }
 }

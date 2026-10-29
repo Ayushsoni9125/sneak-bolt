@@ -1,6 +1,32 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { verifyJwtToken } from '@/lib/jwt';
+import { getSafeRedirectUrl } from '@/lib/validations';
+
+/**
+ * Applies defense-in-depth security headers to any outgoing response.
+ */
+export function applySecurityHeaders(response: NextResponse): NextResponse {
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), browsing-topics=()'
+  );
+  response.headers.set(
+    'Strict-Transport-Security',
+    'max-age=63072000; includeSubDomains; preload'
+  );
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
+  response.headers.set('Cross-Origin-Resource-Policy', 'same-origin');
+  response.headers.set(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://images.unsplash.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+  );
+  return response;
+}
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -57,8 +83,8 @@ export async function updateSession(request: NextRequest) {
     if (!activeUser) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/login';
-      loginUrl.searchParams.set('redirectTo', pathname);
-      return NextResponse.redirect(loginUrl);
+      loginUrl.searchParams.set('redirectTo', getSafeRedirectUrl(pathname));
+      return applySecurityHeaders(NextResponse.redirect(loginUrl));
     }
 
     // Role check for admin routes — verified server-side
@@ -72,12 +98,12 @@ export async function updateSession(request: NextRequest) {
       if (!profile || profile.role !== 'admin') {
         const unauthorizedUrl = request.nextUrl.clone();
         unauthorizedUrl.pathname = '/unauthorized';
-        return NextResponse.redirect(unauthorizedUrl);
+        return applySecurityHeaders(NextResponse.redirect(unauthorizedUrl));
       }
     } else if (activeRole !== 'admin') {
       const unauthorizedUrl = request.nextUrl.clone();
       unauthorizedUrl.pathname = '/unauthorized';
-      return NextResponse.redirect(unauthorizedUrl);
+      return applySecurityHeaders(NextResponse.redirect(unauthorizedUrl));
     }
   }
 
@@ -85,9 +111,9 @@ export async function updateSession(request: NextRequest) {
   if (pathname.startsWith('/account') && !activeUser) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
-    loginUrl.searchParams.set('redirectTo', pathname);
-    return NextResponse.redirect(loginUrl);
+    loginUrl.searchParams.set('redirectTo', getSafeRedirectUrl(pathname));
+    return applySecurityHeaders(NextResponse.redirect(loginUrl));
   }
 
-  return supabaseResponse;
+  return applySecurityHeaders(supabaseResponse);
 }

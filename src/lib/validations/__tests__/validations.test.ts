@@ -7,6 +7,11 @@ import {
   productFormSchema,
   loginSchema,
   signupSchema,
+  sanitizeText,
+  getSafeRedirectUrl,
+  idSchema,
+  orderStatusSchema,
+  createOrderInputSchema,
 } from '../index';
 
 describe('normalizeEmail', () => {
@@ -162,5 +167,82 @@ describe('loginSchema and signupSchema', () => {
 
     const shortName = { ...valid, full_name: 'A' };
     expect(signupSchema.safeParse(shortName).success).toBe(false);
+  });
+});
+
+describe('Security Utilities & Schemas', () => {
+  it('sanitizeText strips HTML tags and control characters', () => {
+    expect(sanitizeText('<script>alert(1)</script>Collector')).toBe('alert(1)Collector');
+    expect(sanitizeText('<b>Bold</b> Name')).toBe('Bold Name');
+    expect(sanitizeText('   Clean Text   ')).toBe('Clean Text');
+  });
+
+  it('getSafeRedirectUrl prevents open redirect vulnerabilities', () => {
+    // Valid relative paths
+    expect(getSafeRedirectUrl('/admin')).toBe('/admin');
+    expect(getSafeRedirectUrl('/account')).toBe('/account');
+    expect(getSafeRedirectUrl('/sneakers/court-one')).toBe('/sneakers/court-one');
+
+    // Dangerous / external paths blocked
+    expect(getSafeRedirectUrl('https://evil.com')).toBe('/');
+    expect(getSafeRedirectUrl('http://evil.com')).toBe('/');
+    expect(getSafeRedirectUrl('//evil.com')).toBe('/');
+    expect(getSafeRedirectUrl('/\\evil.com')).toBe('/');
+    expect(getSafeRedirectUrl('javascript:alert(1)')).toBe('/');
+    expect(getSafeRedirectUrl('data:text/html,<h1>XSS</h1>')).toBe('/');
+    expect(getSafeRedirectUrl(null)).toBe('/');
+    expect(getSafeRedirectUrl(undefined)).toBe('/');
+  });
+
+  it('idSchema validates safe identifiers and rejects injection attempts', () => {
+    expect(idSchema.safeParse('ord_12345_abc').success).toBe(true);
+    expect(idSchema.safeParse('usr-admin-01').success).toBe(true);
+    expect(idSchema.safeParse('item_99').success).toBe(true);
+
+    // Rejects spaces, quotes, SQL injection attempts
+    expect(idSchema.safeParse('id OR 1=1').success).toBe(false);
+    expect(idSchema.safeParse("id'; DROP TABLE orders;--").success).toBe(false);
+    expect(idSchema.safeParse('../path/traversal').success).toBe(false);
+  });
+
+  it('orderStatusSchema validates strictly allowed statuses', () => {
+    for (const status of ['confirmed', 'preparing_dispatch', 'in_transit', 'delivered']) {
+      expect(orderStatusSchema.safeParse(status).success).toBe(true);
+    }
+    expect(orderStatusSchema.safeParse('invalid_status').success).toBe(false);
+    expect(orderStatusSchema.safeParse('').success).toBe(false);
+  });
+
+  it('createOrderInputSchema validates valid order payload and rejects empty/invalid orders', () => {
+    const validOrder = {
+      items: [
+        {
+          id: 'item_1',
+          name: 'Court One',
+          slug: 'court-one',
+          price: 28999,
+          image_url: '/images/court-one.jpg',
+          size: 'UK 9',
+          quantity: 1,
+        },
+      ],
+      total_amount: 28999,
+      shipping_address: {
+        full_name: 'Test Collector',
+        city: 'Mumbai',
+        country: 'India',
+      },
+    };
+    expect(createOrderInputSchema.safeParse(validOrder).success).toBe(true);
+
+    // Rejects empty items
+    expect(createOrderInputSchema.safeParse({ ...validOrder, items: [] }).success).toBe(false);
+
+    // Rejects invalid/negative quantity
+    const badQuantity = {
+      ...validOrder,
+      items: [{ ...validOrder.items[0], quantity: -1 }],
+    };
+    expect(createOrderInputSchema.safeParse(badQuantity).success).toBe(false);
   });
 });

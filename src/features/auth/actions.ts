@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { loginSchema, signupSchema, normalizeEmail } from '@/lib/validations';
+import { loginSchema, signupSchema, normalizeEmail, getSafeRedirectUrl, sanitizeText } from '@/lib/validations';
 import { signJwtToken, verifyJwtToken } from '@/lib/jwt';
 
 export async function login(formData: FormData) {
@@ -12,6 +12,8 @@ export async function login(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
   };
+
+  const safeRedirect = getSafeRedirectUrl(formData.get('redirectTo') as string, '/');
 
   const result = loginSchema.safeParse(rawData);
   if (!result.success) {
@@ -37,7 +39,7 @@ export async function login(formData: FormData) {
       maxAge: 60 * 60 * 24 * 7,
     });
     revalidatePath('/', 'layout');
-    redirect('/admin');
+    redirect(safeRedirect !== '/' && safeRedirect.startsWith('/admin') ? safeRedirect : '/admin');
   }
 
   // Default demo collector credentials for evaluator access (Signed JWT)
@@ -57,7 +59,7 @@ export async function login(formData: FormData) {
       maxAge: 60 * 60 * 24 * 7,
     });
     revalidatePath('/', 'layout');
-    redirect('/account');
+    redirect(safeRedirect !== '/' ? safeRedirect : '/account');
   }
 
   const supabase = await createClient();
@@ -69,7 +71,7 @@ export async function login(formData: FormData) {
 
   if (!error && data?.session) {
     revalidatePath('/', 'layout');
-    redirect('/');
+    redirect(safeRedirect !== '/' ? safeRedirect : '/');
   }
 
   // If Supabase rejected due to unconfirmed email, bypass email confirmation completely
@@ -91,7 +93,7 @@ export async function login(formData: FormData) {
     });
 
     revalidatePath('/', 'layout');
-    redirect('/');
+    redirect(safeRedirect !== '/' ? safeRedirect : (role === 'admin' ? '/admin' : '/'));
   }
 
   if (error) {
@@ -99,12 +101,12 @@ export async function login(formData: FormData) {
   }
 
   revalidatePath('/', 'layout');
-  redirect('/');
+  redirect(safeRedirect !== '/' ? safeRedirect : '/');
 }
 
 export async function signup(formData: FormData) {
   const rawData = {
-    full_name: formData.get('full_name') as string,
+    full_name: sanitizeText(formData.get('full_name') as string),
     email: formData.get('email') as string,
     password: formData.get('password') as string,
     role: (formData.get('role') as string) || 'collector',
