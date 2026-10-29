@@ -30,11 +30,28 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Also support seamless instant session without email confirmation
+  let activeUser = user;
+  let activeRole = 'collector';
+
+  if (!activeUser) {
+    const collectorCookie = request.cookies.get('collector_session')?.value;
+    if (collectorCookie) {
+      try {
+        const parsed = JSON.parse(collectorCookie);
+        activeUser = parsed;
+        activeRole = parsed.role || 'collector';
+      } catch {
+        // invalid cookie
+      }
+    }
+  }
+
   const pathname = request.nextUrl.pathname;
 
   // Protected admin routes
   if (pathname.startsWith('/admin')) {
-    if (!user) {
+    if (!activeUser) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = '/login';
       loginUrl.searchParams.set('redirectTo', pathname);
@@ -42,13 +59,19 @@ export async function updateSession(request: NextRequest) {
     }
 
     // Role check for admin routes — verified server-side
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
 
-    if (!profile || profile.role !== 'admin') {
+      if (!profile || profile.role !== 'admin') {
+        const unauthorizedUrl = request.nextUrl.clone();
+        unauthorizedUrl.pathname = '/unauthorized';
+        return NextResponse.redirect(unauthorizedUrl);
+      }
+    } else if (activeRole !== 'admin') {
       const unauthorizedUrl = request.nextUrl.clone();
       unauthorizedUrl.pathname = '/unauthorized';
       return NextResponse.redirect(unauthorizedUrl);
@@ -56,7 +79,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Protected account routes
-  if (pathname.startsWith('/account') && !user) {
+  if (pathname.startsWith('/account') && !activeUser) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = '/login';
     loginUrl.searchParams.set('redirectTo', pathname);

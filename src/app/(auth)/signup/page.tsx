@@ -8,20 +8,16 @@ import { signup } from '@/features/auth/actions';
 export default function SignupPage() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
-    setSuccess(null);
     const formData = new FormData(e.currentTarget);
     startTransition(async () => {
       const result = await signup(formData);
       if (result?.error) {
         setError(result.error);
-      } else if (result?.success) {
-        setSuccess(result.success);
       }
     });
   }
@@ -48,19 +44,7 @@ export default function SignupPage() {
             </p>
           </div>
 
-          {success ? (
-            <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono">
-              <p className="font-bold mb-1">REGISTRATION INITIATED</p>
-              <p>{success}</p>
-              <Link
-                href="/login"
-                className="mt-3 inline-block font-bold underline"
-              >
-                PROCEED TO SIGN IN →
-              </Link>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} noValidate className="space-y-5">
+          <form onSubmit={handleSubmit} noValidate className="space-y-5">
               {error && (
                 <div
                   className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-mono"
@@ -148,7 +132,6 @@ export default function SignupPage() {
                 )}
               </button>
             </form>
-          )}
         </div>
       </div>
     </div>

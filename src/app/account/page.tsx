@@ -36,10 +36,15 @@ export default async function AccountPage() {
                 <div className="flex justify-between text-sm">
                   <dt className="text-muted-foreground">Member Since</dt>
                   <dd className="text-foreground font-medium">
-                    {new Date(profile.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                    })}
+                    {profile.created_at && !isNaN(new Date(profile.created_at).getTime())
+                      ? new Date(profile.created_at).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                        })
+                      : new Date().toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                        })}
                   </dd>
                 </div>
               </dl>
