@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { verifyJwtToken } from '@/lib/jwt';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -30,19 +31,21 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Also support seamless instant session without email confirmation
+  // Also support seamless instant session with cryptographically signed JWT
   let activeUser = user;
   let activeRole = 'collector';
 
   if (!activeUser) {
-    const collectorCookie = request.cookies.get('collector_session')?.value;
-    if (collectorCookie) {
-      try {
-        const parsed = JSON.parse(collectorCookie);
-        activeUser = parsed;
-        activeRole = parsed.role || 'collector';
-      } catch {
-        // invalid cookie
+    const collectorToken = request.cookies.get('collector_session')?.value;
+    if (collectorToken) {
+      const verified = await verifyJwtToken(collectorToken);
+      if (verified) {
+        activeUser = {
+          id: verified.id,
+          email: verified.email,
+          user_metadata: { full_name: verified.full_name },
+        } as unknown as typeof user;
+        activeRole = verified.role;
       }
     }
   }

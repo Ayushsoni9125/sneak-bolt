@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { loginSchema, signupSchema, normalizeEmail } from '@/lib/validations';
+import { signJwtToken, verifyJwtToken } from '@/lib/jwt';
 
 export async function login(formData: FormData) {
   const rawData = {
@@ -19,17 +20,16 @@ export async function login(formData: FormData) {
 
   const normalized = normalizeEmail(result.data.email);
 
-  // Default administrator credentials for instant admin console access
+  // Default administrator credentials for instant admin console access (Signed JWT)
   if (normalized === 'admin@sneakerdrop.internal' && result.data.password === 'AdminPassword123!') {
     const cookieStore = await cookies();
-    const adminUser = {
+    const token = await signJwtToken({
       id: 'usr_admin_master',
       email: normalized,
-      user_metadata: { full_name: 'Lead Curator Admin' },
+      full_name: 'Lead Curator Admin',
       role: 'admin',
-      created_at: new Date().toISOString(),
-    };
-    cookieStore.set('collector_session', JSON.stringify(adminUser), {
+    });
+    cookieStore.set('collector_session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -40,17 +40,16 @@ export async function login(formData: FormData) {
     redirect('/admin');
   }
 
-  // Default demo collector credentials for evaluator access
+  // Default demo collector credentials for evaluator access (Signed JWT)
   if (normalized === 'collector@sneakerdrop.internal' && result.data.password === 'CollectorPassword123!') {
     const cookieStore = await cookies();
-    const collectorUser = {
+    const token = await signJwtToken({
       id: 'usr_collector_demo',
       email: normalized,
-      user_metadata: { full_name: 'Demo Collector' },
+      full_name: 'Demo Collector',
       role: 'collector',
-      created_at: new Date().toISOString(),
-    };
-    cookieStore.set('collector_session', JSON.stringify(collectorUser), {
+    });
+    cookieStore.set('collector_session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -76,14 +75,14 @@ export async function login(formData: FormData) {
   // If Supabase rejected due to unconfirmed email, bypass email confirmation completely
   if (error && (error.message?.toLowerCase().includes('email not confirmed') || error.message?.toLowerCase().includes('rate limit'))) {
     const cookieStore = await cookies();
-    const role = normalized === 'admin@sneakerdrop.internal' ? 'admin' : 'collector';
-    const fallbackUser = {
+    const role: 'admin' | 'collector' = normalized === 'admin@sneakerdrop.internal' ? 'admin' : 'collector';
+    const token = await signJwtToken({
       id: 'usr_' + Buffer.from(normalized).toString('hex').slice(0, 16),
       email: normalized,
-      user_metadata: { full_name: normalized.split('@')[0] },
+      full_name: normalized.split('@')[0],
       role,
-    };
-    cookieStore.set('collector_session', JSON.stringify(fallbackUser), {
+    });
+    cookieStore.set('collector_session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -117,7 +116,7 @@ export async function signup(formData: FormData) {
   }
 
   const normalized = normalizeEmail(result.data.email);
-  const chosenRole = result.data.role === 'admin' ? 'admin' : 'collector';
+  const chosenRole: 'admin' | 'collector' = result.data.role === 'admin' ? 'admin' : 'collector';
   const supabase = await createClient();
 
   try {
@@ -155,14 +154,13 @@ export async function signup(formData: FormData) {
 
     if (signInRes.data?.session) {
       const cookieStore = await cookies();
-      const autoUser = {
+      const token = await signJwtToken({
         id: signInRes.data.user.id,
         email: normalized,
-        user_metadata: { full_name: result.data.full_name || normalized.split('@')[0] },
+        full_name: result.data.full_name || normalized.split('@')[0],
         role: chosenRole,
-        created_at: new Date().toISOString(),
-      };
-      cookieStore.set('collector_session', JSON.stringify(autoUser), {
+      });
+      cookieStore.set('collector_session', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
@@ -180,17 +178,16 @@ export async function signup(formData: FormData) {
     }
   }
 
-  // Instant sign in: create authenticated session cookie without any email confirmation step
+  // Instant sign in: create authenticated session cookie with signed JWT
   const cookieStore = await cookies();
-  const autoUser = {
+  const token = await signJwtToken({
     id: 'usr_' + Buffer.from(normalized).toString('hex').slice(0, 16),
     email: normalized,
-    user_metadata: { full_name: result.data.full_name || normalized.split('@')[0] },
+    full_name: result.data.full_name || normalized.split('@')[0],
     role: chosenRole,
-    created_at: new Date().toISOString(),
-  };
+  });
 
-  cookieStore.set('collector_session', JSON.stringify(autoUser), {
+  cookieStore.set('collector_session', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -223,12 +220,17 @@ export async function getUser() {
   }
 
   const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get('collector_session')?.value;
-  if (sessionCookie) {
-    try {
-      return JSON.parse(sessionCookie);
-    } catch {
-      return null;
+  const sessionToken = cookieStore.get('collector_session')?.value;
+  if (sessionToken) {
+    const verified = await verifyJwtToken(sessionToken);
+    if (verified) {
+      return {
+        id: verified.id,
+        email: verified.email,
+        role: verified.role,
+        user_metadata: { full_name: verified.full_name },
+        created_at: new Date().toISOString(),
+      };
     }
   }
   return null;

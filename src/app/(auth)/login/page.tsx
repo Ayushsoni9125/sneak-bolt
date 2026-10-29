@@ -42,7 +42,94 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen pt-28 pb-20 flex items-center justify-center px-4 bg-[#fafafa]">
-      <div className="w-full max-w-lg space-y-6">
+      <div className="w-full max-w-lg space-y-4">
+        {/* Compact Upper Demo Credentials Grid */}
+        <div className="bg-zinc-950 text-white p-3.5 sm:p-4 border border-zinc-800 rounded-sm shadow-sm">
+          <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-zinc-800">
+            <div className="flex items-center gap-2 text-[10px] font-mono tracking-widest uppercase text-zinc-300 font-bold">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>EVALUATOR DEMO CREDENTIALS</span>
+            </div>
+            <span className="text-[9px] font-mono uppercase text-emerald-400 tracking-wider bg-emerald-950/60 px-2 py-0.5 border border-emerald-800/40 rounded-sm">
+              1-Click Auto-Fill
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5 text-[10px] font-mono">
+            {/* Admin (Curator) */}
+            <div className="bg-zinc-900 border border-zinc-800 p-2.5 rounded-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-amber-400 font-bold text-[9px] uppercase tracking-wider mb-1">
+                  <span className="flex items-center gap-1">
+                    <ShieldCheck className="h-3 w-3" /> Admin
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy('admin@sneakerdrop.internal', 'admin_email')}
+                    className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                    title="Copy email"
+                  >
+                    {copiedKey === 'admin_email' ? (
+                      <Check className="h-2.5 w-2.5 text-emerald-400" />
+                    ) : (
+                      <Copy className="h-2.5 w-2.5" />
+                    )}
+                  </button>
+                </div>
+                <p className="text-[10px] text-zinc-200 font-semibold truncate select-all">
+                  admin@sneakerdrop.internal
+                </p>
+                <p className="text-[9px] text-zinc-500 font-mono mt-0.5">AdminPassword123!</p>
+              </div>
+
+              <button
+                type="button"
+                id="autofill-admin-btn"
+                onClick={() => handleAutoFill('admin')}
+                className="mt-2.5 w-full py-1.5 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[9px] font-mono uppercase tracking-wider transition-colors cursor-pointer text-center"
+              >
+                Auto-Fill Admin
+              </button>
+            </div>
+
+            {/* Collector (User) */}
+            <div className="bg-zinc-900 border border-zinc-800 p-2.5 rounded-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between text-blue-400 font-bold text-[9px] uppercase tracking-wider mb-1">
+                  <span className="flex items-center gap-1">
+                    <UserCheck className="h-3 w-3" /> User (Collector)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy('collector@sneakerdrop.internal', 'user_email')}
+                    className="text-zinc-500 hover:text-zinc-300 transition-colors"
+                    title="Copy email"
+                  >
+                    {copiedKey === 'user_email' ? (
+                      <Check className="h-2.5 w-2.5 text-emerald-400" />
+                    ) : (
+                      <Copy className="h-2.5 w-2.5" />
+                    )}
+                  </button>
+                </div>
+                <p className="text-[10px] text-zinc-200 font-semibold truncate select-all">
+                  collector@sneakerdrop.internal
+                </p>
+                <p className="text-[9px] text-zinc-500 font-mono mt-0.5">CollectorPassword123!</p>
+              </div>
+
+              <button
+                type="button"
+                id="autofill-collector-btn"
+                onClick={() => handleAutoFill('collector')}
+                className="mt-2.5 w-full py-1.5 bg-blue-400/10 hover:bg-blue-400/20 text-blue-300 border border-blue-400/30 text-[9px] font-mono uppercase tracking-wider transition-colors cursor-pointer text-center"
+              >
+                Auto-Fill User
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Main login card */}
         <div className="bg-white p-8 sm:p-10 border border-zinc-200 shadow-sm">
           <div className="mb-8">
@@ -140,95 +227,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-        </div>
-
-        {/* Demo & Evaluator Credentials Panel */}
-        <div className="bg-zinc-950 text-white p-6 sm:p-7 border border-zinc-800 rounded-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span className="text-xs font-mono font-bold tracking-widest uppercase text-zinc-200">
-                DEMO / EVALUATOR CREDENTIALS
-              </span>
-            </div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 bg-emerald-950/60 px-2 py-0.5 border border-emerald-800/40 rounded-sm">
-              Live Evaluation
-            </span>
-          </div>
-
-          <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
-            Reviewing this assignment? Use the 1-click auto-fill buttons below to instantly test the Admin Console or Collector Storefront.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            {/* Admin Credentials Card */}
-            <div className="bg-zinc-900 border border-zinc-800 p-3.5 rounded-sm space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold flex items-center gap-1.5">
-                  <ShieldCheck className="h-3 w-3" /> Admin (Curator)
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleCopy('admin@sneakerdrop.internal', 'admin_email')}
-                  className="text-zinc-500 hover:text-zinc-300"
-                  title="Copy email"
-                >
-                  {copiedKey === 'admin_email' ? (
-                    <Check className="h-3 w-3 text-emerald-400" />
-                  ) : (
-                    <Copy className="h-3 w-3" />
-                  )}
-                </button>
-              </div>
-
-              <div className="text-[10px] sm:text-[11px] font-mono text-zinc-300 space-y-1">
-                <p className="break-all select-all text-zinc-100 font-semibold">admin@sneakerdrop.internal</p>
-                <p className="text-zinc-400 select-all font-bold">AdminPassword123!</p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleAutoFill('admin')}
-                className="w-full mt-2 py-2 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
-              >
-                Auto-Fill Admin
-              </button>
-            </div>
-
-            {/* Collector Credentials Card */}
-            <div className="bg-zinc-900 border border-zinc-800 p-3.5 rounded-sm space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-blue-400 font-bold flex items-center gap-1.5">
-                  <UserCheck className="h-3 w-3" /> Collector (User)
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleCopy('collector@sneakerdrop.internal', 'user_email')}
-                  className="text-zinc-500 hover:text-zinc-300"
-                  title="Copy email"
-                >
-                  {copiedKey === 'user_email' ? (
-                    <Check className="h-3 w-3 text-emerald-400" />
-                  ) : (
-                    <Copy className="h-3 w-3" />
-                  )}
-                </button>
-              </div>
-
-              <div className="text-[10px] sm:text-[11px] font-mono text-zinc-300 space-y-1">
-                <p className="break-all select-all text-zinc-100 font-semibold">collector@sneakerdrop.internal</p>
-                <p className="text-zinc-400 select-all font-bold">CollectorPassword123!</p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleAutoFill('collector')}
-                className="w-full mt-2 py-2 bg-blue-400/10 hover:bg-blue-400/20 text-blue-300 border border-blue-400/30 text-[10px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
-              >
-                Auto-Fill Collector
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
