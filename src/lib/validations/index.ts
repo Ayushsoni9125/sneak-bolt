@@ -80,6 +80,7 @@ export const signupSchema = z.object({
     .string()
     .min(8, 'Password must be at least 8 characters')
     .max(72, 'Password is too long'),
+  role: z.enum(['collector', 'admin', 'user']).optional(),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

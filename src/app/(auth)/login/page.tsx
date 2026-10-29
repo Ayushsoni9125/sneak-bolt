@@ -181,8 +181,8 @@ export default function LoginPage() {
                 </button>
               </div>
 
-              <div className="text-[11px] font-mono text-zinc-300 space-y-1">
-                <p className="truncate select-all text-zinc-100">admin@sneakerdrop.internal</p>
+              <div className="text-[10px] sm:text-[11px] font-mono text-zinc-300 space-y-1">
+                <p className="break-all select-all text-zinc-100 font-semibold">admin@sneakerdrop.internal</p>
                 <p className="text-zinc-400 select-all font-bold">AdminPassword123!</p>
               </div>
 
@@ -215,8 +215,8 @@ export default function LoginPage() {
                 </button>
               </div>
 
-              <div className="text-[11px] font-mono text-zinc-300 space-y-1">
-                <p className="truncate select-all text-zinc-100">collector@sneakerdrop.internal</p>
+              <div className="text-[10px] sm:text-[11px] font-mono text-zinc-300 space-y-1">
+                <p className="break-all select-all text-zinc-100 font-semibold">collector@sneakerdrop.internal</p>
                 <p className="text-zinc-400 select-all font-bold">CollectorPassword123!</p>
               </div>
 

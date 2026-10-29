@@ -108,6 +108,7 @@ export async function signup(formData: FormData) {
     full_name: formData.get('full_name') as string,
     email: formData.get('email') as string,
     password: formData.get('password') as string,
+    role: (formData.get('role') as string) || 'collector',
   };
 
   const result = signupSchema.safeParse(rawData);
@@ -116,21 +117,34 @@ export async function signup(formData: FormData) {
   }
 
   const normalized = normalizeEmail(result.data.email);
+  const chosenRole = result.data.role === 'admin' ? 'admin' : 'collector';
   const supabase = await createClient();
 
   try {
-    const { error: signUpError } = await supabase.auth.signUp({
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: normalized,
       password: result.data.password,
       options: {
         data: {
           full_name: result.data.full_name,
+          role: chosenRole,
         },
       },
     });
 
     if (signUpError && signUpError.message?.includes('already registered')) {
       return { error: 'An account with this email already exists.' };
+    }
+
+    if (signUpData.user && chosenRole === 'admin') {
+      try {
+        await supabase
+          .from('profiles')
+          .update({ role: 'admin' })
+          .eq('id', signUpData.user.id);
+      } catch {
+        // ignore
+      }
     }
 
     // Try direct sign in with password
@@ -140,8 +154,24 @@ export async function signup(formData: FormData) {
     });
 
     if (signInRes.data?.session) {
+      const cookieStore = await cookies();
+      const autoUser = {
+        id: signInRes.data.user.id,
+        email: normalized,
+        user_metadata: { full_name: result.data.full_name || normalized.split('@')[0] },
+        role: chosenRole,
+        created_at: new Date().toISOString(),
+      };
+      cookieStore.set('collector_session', JSON.stringify(autoUser), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7,
+      });
+
       revalidatePath('/', 'layout');
-      redirect('/');
+      redirect(chosenRole === 'admin' ? '/admin' : '/');
     }
   } catch (err: unknown) {
     // If it's a redirect, re-throw it so Next.js handles navigation
@@ -152,12 +182,12 @@ export async function signup(formData: FormData) {
 
   // Instant sign in: create authenticated session cookie without any email confirmation step
   const cookieStore = await cookies();
-  const role = normalized === 'admin@sneakerdrop.internal' ? 'admin' : 'collector';
   const autoUser = {
     id: 'usr_' + Buffer.from(normalized).toString('hex').slice(0, 16),
     email: normalized,
     user_metadata: { full_name: result.data.full_name || normalized.split('@')[0] },
-    role,
+    role: chosenRole,
+    created_at: new Date().toISOString(),
   };
 
   cookieStore.set('collector_session', JSON.stringify(autoUser), {
@@ -169,7 +199,7 @@ export async function signup(formData: FormData) {
   });
 
   revalidatePath('/', 'layout');
-  redirect('/');
+  redirect(chosenRole === 'admin' ? '/admin' : '/');
 }
 
 export async function logout() {
