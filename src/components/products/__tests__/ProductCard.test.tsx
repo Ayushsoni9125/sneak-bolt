@@ -1,7 +1,16 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ProductCard } from '../ProductCard';
+import { CartProvider } from '@/context/CartContext';
 import type { Product } from '@/types';
+
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+  usePathname: () => '/sneakers',
+}));
 
 const mockProduct: Product = {
   id: 'a1b2c3d4-0001-0001-0001-000000000001',
@@ -37,7 +46,7 @@ describe('ProductCard', () => {
     expect(screen.getByText('Available')).toBeInTheDocument();
   });
 
-  it('renders Add to Cart button and updates state when clicked', () => {
+  it('renders Add to Cart button and updates state when clicked by authenticated user', () => {
     render(<ProductCard product={mockProduct} />);
 
     const addToCartBtn = screen.getByRole('button', { name: /add court one to cart/i });
@@ -46,5 +55,23 @@ describe('ProductCard', () => {
 
     fireEvent.click(addToCartBtn);
     expect(screen.getByText(/added to cart/i)).toBeInTheDocument();
+  });
+
+  it('redirects unauthenticated user to login when clicking Add to Cart', () => {
+    mockPush.mockClear();
+
+    render(
+      <CartProvider initialUser={null}>
+        <ProductCard product={mockProduct} />
+      </CartProvider>
+    );
+
+    const addToCartBtn = screen.getByRole('button', { name: /add court one to cart/i });
+    fireEvent.click(addToCartBtn);
+
+    // Should redirect to login with the redirectTo path encoded
+    expect(mockPush).toHaveBeenCalledWith('/login?redirectTo=%2Fsneakers');
+    // Should NOT mark item as added
+    expect(screen.queryByText(/added to cart/i)).not.toBeInTheDocument();
   });
 });

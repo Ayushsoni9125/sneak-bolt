@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { ArrowRight, ShoppingBag, Check } from 'lucide-react';
 import { AvailabilityBadge } from './AvailabilityBadge';
 import type { Product } from '@/types';
@@ -16,26 +17,37 @@ interface ProductCardProps {
 
 export function ProductCard({ product, priority = false }: ProductCardProps) {
   const formattedPrice = formatPrice(product.price, true);
-  const { addItem } = useCart();
+  const { addItem, requireAuth } = useCart();
+  const pathname = usePathname();
   const [isAdded, setIsAdded] = useState(false);
 
   const handleQuickAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    addItem({
-      id: product.id,
-      name: product.name,
-      slug: product.slug,
-      price: product.price,
-      image_url: product.image_url,
-      size: 'US 9.5',
-      colorway: product.colorway,
-      quantity: 1,
-    });
+    // Route protection: unsigned users cannot add to cart and are redirected to sign in
+    if (!requireAuth(pathname || `/sneakers/${product.slug}`)) {
+      return;
+    }
 
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+    const added = addItem(
+      {
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        price: product.price,
+        image_url: product.image_url,
+        size: 'US 9.5',
+        colorway: product.colorway,
+        quantity: 1,
+      },
+      false
+    );
+
+    if (added) {
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2000);
+    }
   };
 
   return (

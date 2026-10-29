@@ -11,8 +11,17 @@ import { createOrder } from '@/features/orders/actions';
 import type { Order } from '@/types';
 
 export function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, updateQuantity, subtotal, totalCount, clearCart } =
-    useCart();
+  const {
+    items,
+    isOpen,
+    closeCart,
+    removeItem,
+    updateQuantity,
+    subtotal,
+    totalCount,
+    clearCart,
+    requireAuth,
+  } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
@@ -50,6 +59,12 @@ export function CartDrawer() {
   };
 
   const handleCheckout = async () => {
+    // Route protection: unsigned users cannot proceed to checkout
+    if (!requireAuth('/account')) {
+      closeCart();
+      return;
+    }
+
     if (items.length === 0) return;
     setIsCheckingOut(true);
     try {

@@ -32,7 +32,7 @@ const SIZES_DATA: Record<SizeSystem, string[]> = {
 };
 
 export function ProductViewInteractive({ product }: Props) {
-  const { addItem, openCart } = useCart();
+  const { addItem, openCart, requireAuth } = useCart();
   const [selectedAngle, setSelectedAngle] = useState(0);
   const [sizeSystem, setSizeSystem] = useState<SizeSystem>('US');
   const [selectedSize, setSelectedSize] = useState<string>('9.5');
@@ -60,13 +60,18 @@ export function ProductViewInteractive({ product }: Props) {
   }, []);
 
   const handleAddToCart = (openDrawer = false) => {
+    // Route protection: unsigned users cannot add to cart or proceed to order
+    if (!requireAuth(`/sneakers/${product.slug}`)) {
+      return;
+    }
+
     if (!selectedSize) {
       setSizeError(true);
       return;
     }
     setSizeError(false);
 
-    addItem(
+    const added = addItem(
       {
         id: product.id,
         name: product.name,
@@ -80,8 +85,10 @@ export function ProductViewInteractive({ product }: Props) {
       openDrawer
     );
 
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2500);
+    if (added) {
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2500);
+    }
   };
 
   const toggleAccordion = (key: string) => {

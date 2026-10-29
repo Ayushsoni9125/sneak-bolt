@@ -112,6 +112,8 @@ export async function signup(formData: FormData) {
     role: (formData.get('role') as string) || 'collector',
   };
 
+  const safeRedirect = getSafeRedirectUrl(formData.get('redirectTo') as string, '/');
+
   const result = signupSchema.safeParse(rawData);
   if (!result.success) {
     return { error: result.error.issues[0]?.message ?? 'Invalid input.' };
@@ -171,7 +173,7 @@ export async function signup(formData: FormData) {
       });
 
       revalidatePath('/', 'layout');
-      redirect(chosenRole === 'admin' ? '/admin' : '/');
+      redirect(safeRedirect !== '/' ? safeRedirect : (chosenRole === 'admin' ? '/admin' : '/'));
     }
   } catch (err: unknown) {
     // If it's a redirect, re-throw it so Next.js handles navigation
@@ -198,7 +200,7 @@ export async function signup(formData: FormData) {
   });
 
   revalidatePath('/', 'layout');
-  redirect(chosenRole === 'admin' ? '/admin' : '/');
+  redirect(safeRedirect !== '/' ? safeRedirect : (chosenRole === 'admin' ? '/admin' : '/'));
 }
 
 export async function logout() {

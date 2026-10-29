@@ -45,7 +45,15 @@ export async function createOrder(rawData: {
 
     const { items, shipping_address } = validationResult.data;
 
+    // Route and action protection: require authenticated user to create order
     const user = await getUser();
+    if (!user) {
+      return {
+        success: false,
+        error: 'Authentication required. Please sign in to place an order.',
+      };
+    }
+
     const orderNumber = `SD-ORD-${Math.floor(100000 + Math.random() * 900000)}`;
     const orderId = `ord_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 

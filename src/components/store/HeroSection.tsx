@@ -118,12 +118,16 @@ export function HeroSection() {
     return () => clearInterval(timer);
   }, []);
 
-  const { addItem } = useCart();
+  const { addItem, requireAuth } = useCart();
   const [heroAdded, setHeroAdded] = useState(false);
   const currentSneaker = PREMIUM_VAULT_SNEAKERS[currentIndex];
 
   const handleHeroAddToCart = (openDrawer = false) => {
-    addItem(
+    if (!requireAuth('/')) {
+      return;
+    }
+
+    const added = addItem(
       {
         id: currentSneaker.id,
         name: currentSneaker.name,
@@ -135,8 +139,11 @@ export function HeroSection() {
       },
       openDrawer
     );
-    setHeroAdded(true);
-    setTimeout(() => setHeroAdded(false), 2500);
+
+    if (added) {
+      setHeroAdded(true);
+      setTimeout(() => setHeroAdded(false), 2500);
+    }
   };
 
   return (

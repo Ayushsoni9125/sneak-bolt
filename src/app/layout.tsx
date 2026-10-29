@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import { CartProvider } from '@/context/CartContext';
+import { CartDrawer } from '@/components/cart/CartDrawer';
+import { getUser } from '@/features/auth/actions';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,18 +32,26 @@ export const metadata: Metadata = {
   },
 };
 
-import { CartProvider } from '@/context/CartContext';
-import { CartDrawer } from '@/components/cart/CartDrawer';
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let user = null;
+  try {
+    user = await getUser();
+  } catch {
+    // fallback for environments where cookies or db are warming up
+  }
+
+  const initialUser = user
+    ? { id: user.id, email: user.email ?? '', role: user.role }
+    : null;
+
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="antialiased bg-white text-zinc-950 min-h-screen selection:bg-zinc-950 selection:text-white">
-        <CartProvider>
+        <CartProvider initialUser={initialUser}>
           {children}
           <CartDrawer />
         </CartProvider>

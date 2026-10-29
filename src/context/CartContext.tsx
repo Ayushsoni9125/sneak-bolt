@@ -1,17 +1,28 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useMemo, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import type { CartItem } from '@/types';
+import { getUser } from '@/features/auth/actions';
+
+export interface AuthUserSummary {
+  id: string;
+  email?: string;
+  role?: string;
+}
 
 interface CartContextValue {
   items: CartItem[];
   isOpen: boolean;
   totalCount: number;
   subtotal: number;
+  isLoggedIn: boolean;
+  user: AuthUserSummary | null;
+  requireAuth: (redirectTo?: string) => boolean;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
-  addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }, openDrawer?: boolean) => void;
+  addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }, openDrawer?: boolean) => boolean;
   removeItem: (id: string, size: string) => void;
   updateQuantity: (id: string, size: string, quantity: number) => void;
   clearCart: () => void;
@@ -35,10 +46,52 @@ function getInitialCart(): CartItem[] {
   return [];
 }
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
+export function CartProvider({
+  children,
+  initialUser = null,
+}: {
+  children: React.ReactNode;
+  initialUser?: AuthUserSummary | null;
+}) {
+  const router = useRouter();
   const [items, setItems] = useState<CartItem[]>(getInitialCart);
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<AuthUserSummary | null>(initialUser);
+  const [prevInitialUser, setPrevInitialUser] = useState<AuthUserSummary | null>(initialUser);
   const isFirstRender = useRef(true);
+
+  // Sync client-side user during render if initialUser prop changes
+  if (prevInitialUser !== initialUser) {
+    setPrevInitialUser(initialUser);
+    setUser(initialUser);
+  }
+
+  // Background auth state refresh
+  useEffect(() => {
+    getUser()
+      .then((u) => {
+        if (u) {
+          setUser({ id: u.id, email: u.email, role: u.role });
+        } else {
+          setUser(null);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const isLoggedIn = !!user;
+
+  // Protect action: if not logged in, redirect directly to sign in page
+  const requireAuth = (redirectTo?: string): boolean => {
+    if (!user) {
+      const target =
+        redirectTo ||
+        (typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/');
+      router.push(`/login?redirectTo=${encodeURIComponent(target)}`);
+      return false;
+    }
+    return true;
+  };
 
   // Save to localStorage on changes after initial mount
   useEffect(() => {
@@ -60,7 +113,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addItem = (
     newItem: Omit<CartItem, 'quantity'> & { quantity?: number },
     openDrawer: boolean = false
-  ) => {
+  ): boolean => {
+    // Security check: require sign-in before adding to cart
+    if (!user) {
+      requireAuth();
+      return false;
+    }
+
     const qty = newItem.quantity ?? 1;
     setItems((current) => {
       const existingIndex = current.findIndex(
@@ -80,6 +139,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (openDrawer) {
       setIsOpen(true);
     }
+    return true;
   };
 
   const removeItem = (id: string, size: string) => {
@@ -119,6 +179,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         isOpen,
         totalCount,
         subtotal,
+        isLoggedIn,
+        user,
+        requireAuth,
         openCart,
         closeCart,
         toggleCart,
@@ -142,10 +205,13 @@ export function useCart() {
       isOpen: false,
       totalCount: 0,
       subtotal: 0,
+      isLoggedIn: true,
+      user: { id: 'test_usr', email: 'test@example.com' },
+      requireAuth: () => true,
       openCart: () => {},
       closeCart: () => {},
       toggleCart: () => {},
-      addItem: () => {},
+      addItem: () => true,
       removeItem: () => {},
       updateQuantity: () => {},
       clearCart: () => {},
