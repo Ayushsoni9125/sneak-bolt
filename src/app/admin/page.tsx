@@ -31,69 +31,69 @@ export default async function AdminDashboardPage() {
   const recentOrders = orders.slice(0, 4);
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Welcome back. Real-time platform overview and operational intelligence.
+    <div className="space-y-6 sm:space-y-8">
+      <div>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">Dashboard Overview</h1>
+        <p className="text-muted-foreground text-xs sm:text-sm mt-1">
+          Real-time platform ledger and operational intelligence across all vault drops.
         </p>
       </div>
 
-      {/* Top metrics grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-card border border-border rounded-sm p-5">
+      {/* Top metrics grid: 1 col on mobile, 2 on tablet, 4 on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        <div className="bg-card border border-border rounded-sm p-4 sm:p-5">
           <div className="flex items-center justify-between mb-2">
             <p className="label-xs text-muted-foreground">Total Revenue</p>
-            <TrendingUp className="h-4 w-4 text-emerald-400" />
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
           </div>
-          <p className="text-2xl lg:text-3xl font-bold text-emerald-400 font-mono">
+          <p className="text-2xl sm:text-3xl font-bold text-emerald-600 font-mono tracking-tight">
             {formatPrice(stats.revenue)}
           </p>
-          <p className="text-[11px] text-muted-foreground mt-1">Platform gross merchandise volume</p>
+          <p className="text-[11px] text-muted-foreground mt-1">Gross platform merchandise value</p>
         </div>
 
-        <div className="bg-card border border-border rounded-sm p-5">
+        <div className="bg-card border border-border rounded-sm p-4 sm:p-5">
           <div className="flex items-center justify-between mb-2">
             <p className="label-xs text-muted-foreground">User Orders</p>
             <ShoppingBag className="h-4 w-4 text-foreground" />
           </div>
-          <p className="text-2xl lg:text-3xl font-bold text-foreground font-mono">{stats.orders}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-foreground font-mono">{stats.orders}</p>
           <p className="text-[11px] text-muted-foreground mt-1">Acquisitions by collectors</p>
         </div>
 
-        <div className="bg-card border border-border rounded-sm p-5">
+        <div className="bg-card border border-border rounded-sm p-4 sm:p-5">
           <div className="flex items-center justify-between mb-2">
             <p className="label-xs text-muted-foreground">Catalogue Size</p>
             <Package className="h-4 w-4 text-foreground" />
           </div>
-          <p className="text-2xl lg:text-3xl font-bold text-foreground font-mono">{stats.total}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-foreground font-mono">{stats.total}</p>
           <p className="text-[11px] text-muted-foreground mt-1">{stats.available} currently available</p>
         </div>
 
-        <div className="bg-card border border-border rounded-sm p-5">
+        <div className="bg-card border border-border rounded-sm p-4 sm:p-5">
           <div className="flex items-center justify-between mb-2">
             <p className="label-xs text-muted-foreground">Waitlist Requests</p>
-            <Users className="h-4 w-4 text-blue-400" />
+            <Users className="h-4 w-4 text-blue-500" />
           </div>
-          <p className="text-2xl lg:text-3xl font-bold text-blue-400 font-mono">{stats.waitlist}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-blue-600 font-mono">{stats.waitlist}</p>
           <p className="text-[11px] text-muted-foreground mt-1">Submissions for upcoming drops</p>
         </div>
       </div>
 
-      {/* Secondary stats row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      {/* Secondary stats row: 2 on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { label: 'Available', value: stats.available, icon: ShoppingBag, color: 'text-emerald-400' },
-          { label: 'Sold Out', value: stats.sold_out, icon: Ban, color: 'text-red-400' },
-          { label: 'Upcoming', value: stats.upcoming, icon: Clock, color: 'text-amber-400' },
-          { label: 'Waitlist', value: stats.waitlist, icon: Users, color: 'text-blue-400' },
+          { label: 'Available', value: stats.available, icon: ShoppingBag, color: 'text-emerald-600' },
+          { label: 'Sold Out', value: stats.sold_out, icon: Ban, color: 'text-red-500' },
+          { label: 'Upcoming', value: stats.upcoming, icon: Clock, color: 'text-amber-500' },
+          { label: 'Waitlist', value: stats.waitlist, icon: Users, color: 'text-blue-500' },
         ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-card border border-border rounded-sm p-4 flex items-center justify-between">
+          <div key={label} className="bg-card border border-border rounded-sm p-3.5 sm:p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs text-muted-foreground font-mono uppercase tracking-wider">{label}</p>
-              <p className={`text-xl font-bold ${color}`}>{value}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground font-mono uppercase tracking-wider">{label}</p>
+              <p className={`text-lg sm:text-xl font-bold font-mono ${color}`}>{value}</p>
             </div>
-            <Icon className={`h-4 w-4 ${color}`} />
+            <Icon className={`h-4 w-4 shrink-0 ${color}`} />
           </div>
         ))}
       </div>
@@ -101,17 +101,18 @@ export default async function AdminDashboardPage() {
       {/* Recent Orders & Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent User Orders */}
-        <div className="lg:col-span-2 bg-card border border-border rounded-sm p-6">
+        <div className="lg:col-span-2 bg-card border border-border rounded-sm p-4 sm:p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="font-semibold text-foreground">Recent Customer Orders</h2>
+              <h2 className="font-semibold text-foreground text-sm sm:text-base">Recent Customer Orders</h2>
               <p className="text-xs text-muted-foreground mt-0.5">Latest acquisitions by platform users</p>
             </div>
             <Link
               href="/admin/orders"
-              className="inline-flex items-center gap-1.5 text-xs font-mono text-accent hover:underline uppercase tracking-wider"
+              className="inline-flex items-center gap-1.5 text-xs font-mono text-foreground hover:underline uppercase tracking-wider"
             >
-              View All ({stats.orders}) <ArrowRight className="h-3 w-3" />
+              <span>View All ({stats.orders})</span>
+              <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
 
@@ -120,14 +121,14 @@ export default async function AdminDashboardPage() {
           ) : (
             <div className="divide-y divide-border">
               {recentOrders.map((ord) => (
-                <div key={ord.id} className="py-3 flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
+                <div key={ord.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono text-sm font-semibold text-foreground">
                         {ord.order_number}
                       </span>
-                      <span className="text-xs text-muted-foreground">•</span>
-                      <span className="text-xs text-muted-foreground truncate">
+                      <span className="text-xs text-muted-foreground hidden sm:inline">•</span>
+                      <span className="text-xs text-muted-foreground truncate max-w-[200px]">
                         {ord.shipping_address?.full_name || ord.user_email || 'Collector'}
                       </span>
                     </div>
@@ -136,11 +137,11 @@ export default async function AdminDashboardPage() {
                     </p>
                   </div>
 
-                  <div className="text-right shrink-0">
+                  <div className="flex items-center justify-between sm:justify-end sm:text-right gap-3 shrink-0 pt-1 sm:pt-0 border-t sm:border-t-0 border-border/50">
                     <p className="font-mono text-sm font-semibold text-foreground">
                       {formatPrice(ord.total_amount, true)}
                     </p>
-                    <span className="inline-block text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-sm bg-background border border-border text-muted-foreground mt-0.5">
+                    <span className="inline-block text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-sm bg-sidebar border border-border text-muted-foreground">
                       {ord.status.replace('_', ' ')}
                     </span>
                   </div>
@@ -152,38 +153,38 @@ export default async function AdminDashboardPage() {
 
         {/* Quick actions & breakdowns */}
         <div className="space-y-6">
-          <div className="bg-card border border-border rounded-sm p-6">
-            <h2 className="font-semibold text-foreground mb-4">Management Actions</h2>
+          <div className="bg-card border border-border rounded-sm p-4 sm:p-6">
+            <h2 className="font-semibold text-foreground text-sm sm:text-base mb-4">Management Actions</h2>
             <div className="space-y-2">
               <Link
                 href="/admin/orders"
                 id="admin-manage-orders"
-                className="flex items-center gap-3 px-4 py-3 border border-border hover:border-foreground/30 rounded-sm text-sm text-foreground transition-colors"
+                className="flex items-center gap-3 px-3.5 py-3 border border-border hover:border-foreground/40 hover:bg-sidebar rounded-sm text-xs sm:text-sm text-foreground transition-all duration-150"
               >
-                <ShoppingBag className="h-4 w-4 text-emerald-400" />
-                Manage User Orders ({stats.orders})
+                <ShoppingBag className="h-4 w-4 text-emerald-500 shrink-0" />
+                <span className="truncate">Manage User Orders ({stats.orders})</span>
               </Link>
               <Link
                 href="/admin/products/new"
                 id="admin-new-product"
-                className="flex items-center gap-3 px-4 py-3 border border-border hover:border-foreground/30 rounded-sm text-sm text-foreground transition-colors"
+                className="flex items-center gap-3 px-3.5 py-3 border border-border hover:border-foreground/40 hover:bg-sidebar rounded-sm text-xs sm:text-sm text-foreground transition-all duration-150"
               >
-                <Plus className="h-4 w-4 text-accent" />
-                Add New Product
+                <Plus className="h-4 w-4 text-foreground shrink-0" />
+                <span className="truncate">Add New Product</span>
               </Link>
               <Link
                 href="/admin/products"
-                className="flex items-center gap-3 px-4 py-3 border border-border hover:border-foreground/30 rounded-sm text-sm text-foreground transition-colors"
+                className="flex items-center gap-3 px-3.5 py-3 border border-border hover:border-foreground/40 hover:bg-sidebar rounded-sm text-xs sm:text-sm text-foreground transition-all duration-150"
               >
-                <Package className="h-4 w-4 text-muted-foreground" />
-                Manage Catalogue ({stats.total})
+                <Package className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="truncate">Manage Catalogue ({stats.total})</span>
               </Link>
               <Link
                 href="/admin/waitlist"
-                className="flex items-center gap-3 px-4 py-3 border border-border hover:border-foreground/30 rounded-sm text-sm text-foreground transition-colors"
+                className="flex items-center gap-3 px-3.5 py-3 border border-border hover:border-foreground/40 hover:bg-sidebar rounded-sm text-xs sm:text-sm text-foreground transition-all duration-150"
               >
-                <Users className="h-4 w-4 text-muted-foreground" />
-                View Waitlist ({stats.waitlist})
+                <Users className="h-4 w-4 text-blue-500 shrink-0" />
+                <span className="truncate">View Waitlist ({stats.waitlist})</span>
               </Link>
             </div>
           </div>

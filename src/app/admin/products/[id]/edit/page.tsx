@@ -22,20 +22,20 @@ export default async function EditProductPage({ params }: Props) {
   };
 
   return (
-    <div>
-      <div className="mb-8">
+    <div className="space-y-6 sm:space-y-8">
+      <div>
         <Link
           href="/admin/products"
-          className="inline-flex items-center gap-2 label-xs text-muted-foreground hover:text-foreground transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors mb-3 sm:mb-4"
         >
           <ArrowLeft className="h-3 w-3" />
-          Back to Products
+          <span>Back to Products</span>
         </Link>
-        <h1 className="text-2xl font-bold text-foreground tracking-tight">Edit Product</h1>
-        <p className="text-muted-foreground text-sm mt-1">{product.name}</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">Edit Silhouette</h1>
+        <p className="text-muted-foreground text-xs sm:text-sm mt-1">{product.name} ({product.slug})</p>
       </div>
 
-      <div className="bg-card border border-border rounded-sm p-8">
+      <div className="bg-card border border-border rounded-sm p-4 sm:p-6 lg:p-8 shadow-xs">
         <ProductForm product={product} onSubmit={action} submitLabel="Save Changes" />
       </div>
     </div>

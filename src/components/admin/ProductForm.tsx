@@ -37,21 +37,21 @@ export function ProductForm({ product, onSubmit, submitLabel }: ProductFormProps
   }
 
   const inputClass =
-    'w-full bg-background border border-border text-foreground placeholder:text-muted-foreground text-sm px-4 py-3 focus:outline-none focus:border-foreground/50 transition-colors rounded-sm';
-  const labelClass = 'label-xs text-muted-foreground block mb-1.5';
+    'w-full bg-background border border-border text-foreground placeholder:text-muted-foreground text-xs sm:text-sm px-3.5 sm:px-4 py-2.5 sm:py-3 focus:outline-none focus:border-foreground/50 transition-colors rounded-sm';
+  const labelClass = 'label-xs text-muted-foreground block mb-1.5 uppercase font-mono tracking-wider';
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6 max-w-2xl">
+    <form onSubmit={handleSubmit} noValidate className="space-y-5 sm:space-y-6 max-w-2xl">
       {error && (
         <div
-          className="px-4 py-3 bg-destructive/10 border border-destructive/30 text-destructive text-sm rounded-sm"
+          className="px-4 py-3 bg-destructive/10 border border-destructive/30 text-destructive text-xs sm:text-sm rounded-sm"
           role="alert"
         >
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div>
           <label htmlFor="product-name" className={labelClass}>
             Product Name *
@@ -79,7 +79,7 @@ export function ProductForm({ product, onSubmit, submitLabel }: ProductFormProps
             placeholder="court-one"
             className={inputClass}
           />
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-[11px] text-muted-foreground mt-1">
             URL-safe identifier (lowercase, hyphens only)
           </p>
         </div>
@@ -94,13 +94,13 @@ export function ProductForm({ product, onSubmit, submitLabel }: ProductFormProps
           name="description"
           required
           defaultValue={product?.description}
-          rows={5}
-          placeholder="Describe the sneaker…"
+          rows={4}
+          placeholder="Describe the silhouette, materials, and origin…"
           className={inputClass + ' resize-none'}
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div>
           <label htmlFor="product-price" className={labelClass}>
             Price (₹ / INR) *
@@ -150,31 +150,31 @@ export function ProductForm({ product, onSubmit, submitLabel }: ProductFormProps
           placeholder="https://images.unsplash.com/…"
           className={inputClass}
         />
-        <p className="text-xs text-muted-foreground mt-1">
-          Use a publicly accessible image URL (e.g. Unsplash)
+        <p className="text-[11px] text-muted-foreground mt-1">
+          Use a publicly accessible image URL (e.g. Unsplash or `/images/...`)
         </p>
       </div>
 
-      <div className="flex gap-4 pt-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
         <button
           type="submit"
           id="product-form-submit"
           disabled={isPending}
-          className="inline-flex items-center gap-2 bg-foreground text-background px-8 py-3 text-sm font-semibold uppercase tracking-widest hover:bg-accent disabled:opacity-60 disabled:cursor-not-allowed transition-colors rounded-sm"
+          className="inline-flex items-center justify-center gap-2 bg-foreground text-background px-6 sm:px-8 py-3 text-xs sm:text-sm font-semibold uppercase tracking-widest hover:bg-foreground/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors rounded-sm shadow-xs cursor-pointer"
         >
           {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              Saving…
+              <span>Saving…</span>
             </>
           ) : (
-            submitLabel
+            <span>{submitLabel}</span>
           )}
         </button>
         <button
           type="button"
           onClick={() => router.push('/admin/products')}
-          className="px-6 py-3 text-sm text-muted-foreground border border-border hover:border-foreground/30 hover:text-foreground transition-colors rounded-sm"
+          className="px-6 py-3 text-xs sm:text-sm text-muted-foreground border border-border hover:border-foreground/40 hover:text-foreground transition-colors rounded-sm text-center cursor-pointer"
         >
           Cancel
         </button>
