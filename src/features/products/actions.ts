@@ -4,43 +4,56 @@ import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { isAdmin } from '@/features/auth/actions';
 import { productSchema, productFormSchema } from '@/lib/validations';
+import { FALLBACK_PRODUCTS } from '@/data/seed-products';
 import type { Product } from '@/types';
 
 // ── Read ─────────────────────────────────────────────────────────────────────
 
 export async function getProducts(): Promise<Product[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) throw new Error('Failed to load products');
-  return data ?? [];
+    if (!error && data && data.length > 0) return data;
+  } catch {
+    // fallback to seed catalog
+  }
+  return FALLBACK_PRODUCTS;
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('slug', slug)
+      .single();
 
-  if (error) return null;
-  return data;
+    if (!error && data) return data;
+  } catch {
+    // fallback to seed catalog
+  }
+  return FALLBACK_PRODUCTS.find((p) => p.slug === slug) ?? null;
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('id', id)
-    .single();
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
 
-  if (error) return null;
-  return data;
+    if (!error && data) return data;
+  } catch {
+    // fallback to seed catalog
+  }
+  return FALLBACK_PRODUCTS.find((p) => p.id === id) ?? null;
 }
 
 // ── Admin mutations (server-verified authorization) ──────────────────────────

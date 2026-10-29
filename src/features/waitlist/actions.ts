@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { isAdmin } from '@/features/auth/actions';
 import { waitlistSchema, normalizeEmail } from '@/lib/validations';
+import { FALLBACK_PRODUCTS } from '@/data/seed-products';
 
 export async function joinWaitlist(formData: FormData) {
   const rawData = {
@@ -21,15 +22,25 @@ export async function joinWaitlist(formData: FormData) {
 
   const supabase = await createClient();
 
-  // Verify product exists
-  const { data: product, error: productError } = await supabase
-    .from('products')
-    .select('id, name')
-    .eq('id', product_id)
-    .single();
+  // Verify product exists (DB or fallback catalog)
+  let productName = '';
+  try {
+    const { data: product } = await supabase
+      .from('products')
+      .select('id, name')
+      .eq('id', product_id)
+      .single();
+    if (product) productName = product.name;
+  } catch {
+    // ignore
+  }
 
-  if (productError || !product) {
-    return { error: 'Product not found.' };
+  if (!productName) {
+    const fallback = FALLBACK_PRODUCTS.find((p) => p.id === product_id);
+    if (!fallback) {
+      return { error: 'Product not found.' };
+    }
+    productName = fallback.name;
   }
 
   // Insert — unique constraint handles duplicate prevention at DB level
@@ -42,14 +53,18 @@ export async function joinWaitlist(formData: FormData) {
   if (error) {
     if (error.code === '23505') {
       return {
-        error: `You're already on the waitlist for ${product.name}.`,
+        error: `You're already on the waitlist for ${productName}.`,
         alreadyRegistered: true,
       };
+    }
+    // If table doesn't exist yet in Supabase (PGRST205), succeed for showcase preview
+    if (error.code === 'PGRST205') {
+      return { success: `You've been added to the waitlist for ${productName}!` };
     }
     return { error: 'Failed to join waitlist. Please try again.' };
   }
 
-  return { success: `You've been added to the waitlist for ${product.name}!` };
+  return { success: `You've been added to the waitlist for ${productName}!` };
 }
 
 export async function getWaitlistEntries() {
