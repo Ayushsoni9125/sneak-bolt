@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { ProductCard } from '@/components/products/ProductCard';
 import type { Product } from '@/types';
 
@@ -8,56 +8,57 @@ interface FeaturedProductsProps {
 }
 
 export function FeaturedProducts({ products }: FeaturedProductsProps) {
-  // Show 6 featured sneakers on homepage
+  // Show first 6 sneakers
   const featured = products.slice(0, 6);
 
   return (
     <section className="py-20 md:py-28 mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 bg-white">
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 border-b border-zinc-200 pb-6">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 text-zinc-900 text-xs font-bold uppercase tracking-wider mb-3">
-            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-            <span>Curated Showcase</span>
+          <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase mb-2">
+            <span>INDEX 01</span>
+            <span>{'//'}</span>
+            <span>ACTIVE VAULT ALLOCATIONS</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-zinc-950 uppercase tracking-tight">
-            Featured Releases
+          <h2 className="text-2xl sm:text-4xl font-black text-zinc-950 uppercase tracking-tight">
+            CURATED SILHOUETTES
           </h2>
-          <p className="text-sm sm:text-base text-zinc-500 mt-2 max-w-lg">
-            Handpicked icons from our vault. Featuring full-grain leather classics, lightweight runners, and limited collabs.
+          <p className="text-xs sm:text-sm text-zinc-500 mt-2 max-w-lg font-sans">
+            Serialized editions handcrafted from Italian calfskin, archival Japanese nubuck, and aerodynamic supercritical foams.
           </p>
         </div>
 
         <Link
           href="/sneakers"
           id="featured-view-all"
-          className="group inline-flex items-center gap-2.5 text-sm font-bold text-zinc-950 hover:text-amber-600 transition-colors"
+          className="group inline-flex items-center gap-2 text-xs font-mono tracking-[0.2em] text-zinc-950 uppercase hover:text-zinc-600 transition-colors pb-1"
         >
-          <span>View All {products.length || 12} Drops</span>
-          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+          <span>VIEW ALL [{products.length || 12}]</span>
+          <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-1" />
         </Link>
       </div>
 
       {/* Product Grid */}
       {featured.length === 0 ? (
-        <div className="text-center py-20 bg-zinc-50 rounded-2xl border border-zinc-200">
-          <p className="text-zinc-500 font-medium">No products available at the moment.</p>
+        <div className="text-center py-20 border border-zinc-200 text-xs font-mono uppercase tracking-widest text-zinc-400">
+          No silhouettes currently listed in vault.
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {featured.map((product, i) => (
             <ProductCard key={product.id} product={product} priority={i === 0} />
           ))}
         </div>
       )}
 
-      {/* Bottom explore banner */}
-      <div className="mt-14 text-center">
+      {/* Bottom Explore Trigger */}
+      <div className="mt-16 text-center border-t border-zinc-200 pt-10">
         <Link
           href="/sneakers"
-          className="inline-flex items-center gap-3 bg-zinc-100 hover:bg-zinc-200/80 text-zinc-950 px-8 py-3.5 rounded-full text-xs font-extrabold uppercase tracking-widest transition-all"
+          className="inline-flex items-center gap-3 px-8 py-4 bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-mono tracking-[0.25em] uppercase transition-colors"
         >
-          <span>Browse Complete 12-Pair Catalog</span>
+          <span>BROWSE COMPLETE 12-SILHOUETTE VAULT</span>
           <ArrowRight className="h-3.5 w-3.5" />
         </Link>
       </div>

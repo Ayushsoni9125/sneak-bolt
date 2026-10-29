@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Menu, X, ShoppingBag, ShieldCheck, Sparkles } from 'lucide-react';
+import { Menu, X, ShoppingBag, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useCart } from '@/context/CartContext';
 
 interface NavbarProps {
   isAdmin?: boolean;
@@ -12,19 +13,20 @@ interface NavbarProps {
 }
 
 const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/sneakers', label: 'All Sneakers' },
-  { href: '/upcoming', label: 'Upcoming Drops' },
-  { href: '/sneakers?filter=sold_out', label: 'Vault Archive' },
+  { href: '/sneakers', label: 'THE VAULT [12]' },
+  { href: '/sneakers?filter=available', label: 'AVAILABLE' },
+  { href: '/upcoming', label: 'CALENDAR' },
+  { href: '/sneakers?filter=sold_out', label: 'ARCHIVE' },
 ];
 
 export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { openCart, totalCount } = useCart();
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 15);
+    const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
   }, []);
@@ -37,47 +39,47 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
 
   return (
     <>
+      {/* Top Luxury Announcement Ticker */}
+      <header className="fixed top-0 inset-x-0 z-40 bg-zinc-950 text-white text-[10px] font-mono tracking-[0.25em] uppercase py-2 px-4 text-center border-b border-zinc-800">
+        <div className="flex items-center justify-center gap-6 overflow-hidden">
+          <span>COMPLIMENTARY WORLDWIDE EXPRESS DISPATCH ON ALL VAULT RELEASES</span>
+          <span className="hidden sm:inline text-zinc-600">•</span>
+          <span className="hidden sm:inline">SERIALIZED HANDCRAFTED FOOTWEAR</span>
+        </div>
+      </header>
+
+      {/* Main Navigation */}
       <nav
         className={cn(
-          'fixed top-0 inset-x-0 z-50 transition-all duration-300',
-          scrolled
-            ? 'bg-white/95 backdrop-blur-md border-b border-zinc-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] py-3'
-            : 'bg-white/70 backdrop-blur-sm border-b border-zinc-100 py-4'
+          'fixed top-[33px] inset-x-0 z-40 transition-all duration-200 bg-white/95 backdrop-blur-md border-b border-zinc-200/90',
+          scrolled ? 'py-3.5 shadow-[0_2px_12px_rgba(0,0,0,0.03)]' : 'py-4'
         )}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
           <div className="flex items-center justify-between">
-            {/* Brand Logo */}
-            <Link
-              href="/"
-              className="flex items-center gap-2.5 group"
-            >
-              <div className="h-8 w-8 bg-zinc-950 rounded-lg flex items-center justify-center text-white font-black text-xs tracking-tighter group-hover:bg-amber-600 transition-colors shadow-sm">
-                SD
-              </div>
-              <div className="flex flex-col">
-                <span className="font-extrabold text-base tracking-tighter text-zinc-950 uppercase group-hover:text-amber-600 transition-colors">
-                  SNEAKERDROP
-                </span>
-                <span className="text-[10px] font-bold tracking-widest text-zinc-400 uppercase -mt-1">
-                  Edition 2026
-                </span>
-              </div>
+            {/* Logo */}
+            <Link href="/" className="flex items-baseline gap-2 group">
+              <span className="text-base sm:text-lg font-black tracking-[0.18em] text-zinc-950 uppercase group-hover:text-zinc-600 transition-colors">
+                SNEAKERDROP
+              </span>
+              <span className="hidden md:inline-block text-[10px] font-mono text-zinc-400 tracking-widest uppercase">
+                / ATELIER 2026
+              </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <ul className="hidden md:flex items-center gap-1.5 lg:gap-2 bg-zinc-100/80 p-1 rounded-full border border-zinc-200/60">
+            {/* Desktop Navigation Links */}
+            <ul className="hidden md:flex items-center gap-8">
               {navLinks.map(({ href, label }) => {
-                const isActive = pathname === href || (href !== '/' && pathname.startsWith(href));
+                const isActive = pathname === href || (href !== '/' && pathname.startsWith(href) && href.includes('filter') === false);
                 return (
                   <li key={href}>
                     <Link
                       href={href}
                       className={cn(
-                        'px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all',
+                        'text-xs font-mono tracking-[0.18em] uppercase transition-colors relative py-1',
                         isActive
-                          ? 'bg-white text-zinc-950 shadow-xs'
-                          : 'text-zinc-600 hover:text-zinc-950 hover:bg-white/50'
+                          ? 'text-zinc-950 font-bold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1.5px] after:bg-zinc-950'
+                          : 'text-zinc-500 hover:text-zinc-950 font-medium'
                       )}
                     >
                       {label}
@@ -89,58 +91,48 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
                 <li>
                   <Link
                     href="/admin"
-                    className={cn(
-                      'px-4 py-1.5 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1.5',
-                      pathname.startsWith('/admin')
-                        ? 'bg-amber-600 text-white shadow-xs'
-                        : 'text-amber-700 hover:bg-amber-100/70'
-                    )}
+                    className="text-xs font-mono tracking-[0.18em] uppercase text-amber-700 hover:text-amber-900 font-bold flex items-center gap-1.5"
                   >
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    Admin
+                    ADMIN
                   </Link>
                 </li>
               )}
             </ul>
 
-            {/* Right Actions */}
-            <div className="flex items-center gap-3">
-              <Link
-                href="/sneakers"
-                className="hidden sm:flex items-center gap-2 bg-zinc-100 hover:bg-zinc-200/80 text-zinc-800 text-xs font-semibold px-3 py-1.5 rounded-full transition-colors"
-              >
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                <span>12 Releases</span>
-              </Link>
-
+            {/* Right Actions: Account & Bag Button */}
+            <div className="flex items-center gap-3 sm:gap-5">
               {isLoggedIn ? (
                 <Link
                   href="/account"
-                  className="text-xs font-bold tracking-wide text-zinc-700 hover:text-zinc-950 px-3 py-1.5 rounded-md hover:bg-zinc-100 transition-colors"
+                  className="hidden sm:inline-block text-xs font-mono tracking-[0.15em] uppercase text-zinc-600 hover:text-zinc-950 transition-colors"
                 >
-                  Account
+                  ACCOUNT
                 </Link>
               ) : (
                 <Link
                   href="/login"
-                  className="text-xs font-bold tracking-wide text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-3.5 py-1.5 rounded-full transition-colors"
+                  className="hidden sm:inline-block text-xs font-mono tracking-[0.15em] uppercase text-zinc-600 hover:text-zinc-950 transition-colors"
                 >
-                  Sign In
+                  SIGN IN
                 </Link>
               )}
 
-              <Link
-                href="/sneakers"
-                className="relative p-2 rounded-full hover:bg-zinc-100 text-zinc-700 hover:text-zinc-950 transition-colors"
-                aria-label="View catalogue bag"
+              {/* Shopping Bag Trigger Button */}
+              <button
+                onClick={openCart}
+                id="cart-trigger-btn"
+                className="flex items-center gap-2 px-3 py-1.5 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-950 text-xs font-mono tracking-[0.15em] uppercase transition-colors"
+                aria-label={`Open shopping bag with ${totalCount} items`}
               >
-                <ShoppingBag className="h-4 w-4" />
-                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white" />
-              </Link>
+                <ShoppingBag className="h-3.5 w-3.5" />
+                <span>BAG</span>
+                <span className="font-bold text-zinc-950">[{totalCount}]</span>
+              </button>
 
               {/* Mobile Menu Button */}
               <button
-                className="md:hidden p-2 rounded-lg text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 transition-colors"
+                className="md:hidden p-2 text-zinc-800 hover:text-zinc-950"
                 onClick={() => setMobileOpen(!mobileOpen)}
                 aria-label="Toggle navigation menu"
               >
@@ -153,50 +145,62 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
 
       {/* Mobile Drawer Menu */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl pt-24 px-6 sm:px-10 flex flex-col justify-between pb-10">
-          <div className="flex flex-col gap-5">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Navigation</p>
+        <div className="fixed inset-0 z-50 bg-white pt-28 px-6 pb-10 flex flex-col justify-between">
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between border-b border-zinc-200 pb-4">
+              <span className="text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase">
+                DIRECTORY
+              </span>
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="p-1 text-zinc-500 hover:text-zinc-950"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
             {navLinks.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
-                className={cn(
-                  'text-2xl font-extrabold tracking-tight transition-colors',
-                  pathname === href ? 'text-amber-600' : 'text-zinc-900'
-                )}
+                className="text-xl font-bold tracking-tight text-zinc-950 hover:text-zinc-500 transition-colors"
               >
                 {label}
               </Link>
             ))}
+
             {isAdmin && (
-              <Link href="/admin" className="text-2xl font-extrabold text-amber-600 flex items-center gap-2">
+              <Link
+                href="/admin"
+                className="text-lg font-bold text-amber-700 flex items-center gap-2"
+              >
                 <ShieldCheck className="h-5 w-5" />
-                Admin Console
+                ADMIN CONSOLE
               </Link>
             )}
           </div>
 
-          <div className="border-t border-zinc-200 pt-6 flex flex-col gap-3">
+          <div className="border-t border-zinc-200 pt-6 flex flex-col gap-3 font-mono text-xs uppercase tracking-widest">
             {isLoggedIn ? (
               <Link
                 href="/account"
-                className="w-full text-center py-3 bg-zinc-950 text-white font-bold text-sm rounded-xl"
+                className="w-full text-center py-3.5 bg-zinc-950 text-white hover:bg-zinc-800 transition-colors"
               >
-                My Account
+                VIEW ACCOUNT
               </Link>
             ) : (
-              <div className="flex gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <Link
                   href="/login"
-                  className="flex-1 text-center py-3 border border-zinc-300 font-bold text-sm text-zinc-900 rounded-xl"
+                  className="text-center py-3 border border-zinc-300 text-zinc-950 hover:bg-zinc-50 transition-colors"
                 >
-                  Log In
+                  SIGN IN
                 </Link>
                 <Link
                   href="/signup"
-                  className="flex-1 text-center py-3 bg-zinc-950 text-white font-bold text-sm rounded-xl"
+                  className="text-center py-3 bg-zinc-950 text-white hover:bg-zinc-800 transition-colors"
                 >
-                  Create Account
+                  REGISTER
                 </Link>
               </div>
             )}

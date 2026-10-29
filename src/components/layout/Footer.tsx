@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { ShieldCheck, Heart } from 'lucide-react';
 
 export function Footer() {
   const year = 2026;
@@ -11,37 +10,40 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10 lg:gap-12">
           {/* Brand info */}
           <div className="col-span-2">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="h-7 w-7 bg-zinc-950 rounded-lg flex items-center justify-center text-white font-black text-xs tracking-tighter">
-                SD
-              </div>
-              <span className="font-extrabold text-lg tracking-tight text-zinc-950 uppercase">
+            <Link href="/" className="inline-block mb-3">
+              <span className="font-black text-base sm:text-lg tracking-[0.2em] text-zinc-950 uppercase">
                 SNEAKERDROP
               </span>
-            </div>
-            <p className="text-sm text-zinc-500 leading-relaxed max-w-sm mb-6">
-              Independent limited-edition sneaker showcase and drop archive. Handcrafted from luxury leathers, custom midsoles, and verified authenticity.
+              <span className="block text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+                ATELIER & ARCHIVE // EDITION 2026
+              </span>
+            </Link>
+
+            <p className="text-xs text-zinc-500 leading-relaxed max-w-sm mb-6 font-sans">
+              Independent limited-edition sneaker showcase and drop archive. Handcrafted from luxury leathers, custom vulcanized cupsoles, and serialized NFC authenticity ledger tags.
             </p>
-            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full w-fit border border-emerald-200">
-              <ShieldCheck className="h-4 w-4" />
-              <span>100% Authenticity Guaranteed</span>
+
+            <div className="text-[11px] font-mono tracking-widest text-zinc-400 uppercase">
+              CIVITANOVA MARCHE • FLORENCE • OKAYAMA
             </div>
           </div>
 
           {/* Column 1: Drops */}
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">Collection</p>
-            <ul className="space-y-3">
+            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400 mb-4 font-bold">
+              DIRECTORY
+            </p>
+            <ul className="space-y-2.5 text-xs font-mono tracking-wider">
               {[
-                { href: '/sneakers', label: 'All 12 Releases' },
-                { href: '/sneakers?filter=available', label: 'Available Now' },
-                { href: '/upcoming', label: 'Upcoming Drops' },
-                { href: '/sneakers?filter=sold_out', label: 'Vault Archive' },
+                { href: '/sneakers', label: 'THE VAULT [12]' },
+                { href: '/sneakers?filter=available', label: 'AVAILABLE NOW' },
+                { href: '/upcoming', label: 'RELEASE CALENDAR' },
+                { href: '/sneakers?filter=sold_out', label: 'ARCHIVE GRAILS' },
               ].map(({ href, label }) => (
-                <li key={href}>
+                <li key={label}>
                   <Link
                     href={href}
-                    className="text-sm font-medium text-zinc-600 hover:text-zinc-950 transition-colors"
+                    className="text-zinc-600 hover:text-zinc-950 transition-colors uppercase"
                   >
                     {label}
                   </Link>
@@ -52,18 +54,20 @@ export function Footer() {
 
           {/* Column 2: Account */}
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">Account</p>
-            <ul className="space-y-3">
+            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400 mb-4 font-bold">
+              COLLECTOR
+            </p>
+            <ul className="space-y-2.5 text-xs font-mono tracking-wider">
               {[
-                { href: '/login', label: 'Sign In' },
-                { href: '/signup', label: 'Create Account' },
-                { href: '/account', label: 'Profile Vault' },
-                { href: '/admin', label: 'Admin Console' },
+                { href: '/login', label: 'SIGN IN' },
+                { href: '/signup', label: 'REGISTER VAULT' },
+                { href: '/account', label: 'LEDGER PROFILE' },
+                { href: '/admin', label: 'ATELIER CONSOLE' },
               ].map(({ href, label }) => (
-                <li key={href}>
+                <li key={label}>
                   <Link
                     href={href}
-                    className="text-sm font-medium text-zinc-600 hover:text-zinc-950 transition-colors"
+                    className="text-zinc-600 hover:text-zinc-950 transition-colors uppercase"
                   >
                     {label}
                   </Link>
@@ -72,32 +76,32 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Trust */}
+          {/* Column 3: Logistics */}
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">Assurance</p>
-            <ul className="space-y-3">
-              {[
-                { label: 'Shoe Sizing Guide' },
-                { label: 'Escrow Verification' },
-                { label: 'Worldwide Shipping' },
-                { label: 'Terms & Conditions' },
-              ].map(({ label }) => (
-                <li key={label}>
-                  <span className="text-sm font-medium text-zinc-500 hover:text-zinc-800 transition-colors cursor-pointer flex items-center gap-1">
-                    {label}
-                  </span>
-                </li>
-              ))}
+            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400 mb-4 font-bold">
+              ASSURANCE
+            </p>
+            <ul className="space-y-2.5 text-xs font-mono tracking-wider text-zinc-500">
+              <li>
+                <span className="uppercase">NFC CRYPTO TAGS</span>
+              </li>
+              <li>
+                <span className="uppercase">DHL EXPRESS AIR</span>
+              </li>
+              <li>
+                <span className="uppercase">14-DAY VAULT RETURN</span>
+              </li>
+              <li>
+                <span className="uppercase">TERMS OF SALE</span>
+              </li>
             </ul>
           </div>
         </div>
 
         {/* Bottom copyright bar */}
-        <div className="mt-14 pt-8 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium text-zinc-400">
-          <p>© {year} SneakerDrop Inc. All rights reserved.</p>
-          <p className="flex items-center gap-1.5 text-zinc-500">
-            Crafted with <Heart className="h-3.5 w-3.5 text-red-500 fill-red-500" /> for sneaker culture enthusiasts.
-          </p>
+        <div className="mt-14 pt-8 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-mono tracking-widest uppercase text-zinc-400">
+          <p>© {year} SNEAKERDROP ARCHIVE INC. ALL RIGHTS RESERVED.</p>
+          <p>AUTHENTICATED LUXURY FOOTWEAR PLATFORM</p>
         </div>
       </div>
     </footer>

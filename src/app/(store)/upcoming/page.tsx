@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import { getProducts } from '@/features/products/actions';
 import { ProductCard } from '@/components/products/ProductCard';
 import type { Product } from '@/types';
-import { Clock, Bell } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Upcoming Drops — SneakerDrop',
-  description: 'Get first access to SneakerDrop upcoming releases. Join the waitlist before they sell out.',
+  title: 'Release Calendar — SneakerDrop Atelier Archive',
+  description: 'Priority pre-registration for upcoming SneakerDrop releases. Access private checkout links before public launch.',
 };
 
 export default async function UpcomingPage() {
@@ -22,45 +21,36 @@ export default async function UpcomingPage() {
   const upcoming = products.filter((p) => p.availability === 'upcoming');
 
   return (
-    <div className="min-h-screen pt-20 bg-white">
+    <div className="min-h-screen pt-24 bg-white">
       {/* Header section */}
-      <div className="border-b border-zinc-200 bg-zinc-50/60 py-12 sm:py-16">
+      <div className="border-b border-zinc-200 bg-[#fafafa] py-14 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold uppercase tracking-wider mb-4 border border-amber-200">
-            <Clock className="h-3.5 w-3.5 text-amber-600" />
-            <span>Priority Drop Access</span>
+          <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase mb-3">
+            <span>SCHEDULE</span>
+            <span>{'//'}</span>
+            <span>CALENDAR 2026</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-black text-zinc-950 uppercase tracking-tight">
-            Upcoming Drops
+          <h1 className="text-3xl sm:text-6xl font-black text-zinc-950 uppercase tracking-tight leading-none">
+            RELEASE CALENDAR
           </h1>
-          <p className="text-sm sm:text-base text-zinc-600 mt-2 max-w-lg">
-            These silhouettes are entering production. Register on the waitlist now to receive a private checkout link 1 hour prior to the global public drop.
+          <p className="text-xs sm:text-sm text-zinc-500 mt-3 max-w-lg font-sans">
+            These silhouettes are completing final atelier finishing. Register your email on each silhouette to receive an encrypted 15-minute checkout allocation prior to general release.
           </p>
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-12">
-        {error && (
-          <div className="text-center py-20 bg-red-50/50 rounded-2xl border border-red-200">
-            <p className="text-red-800 font-semibold text-sm">
-              Unable to load upcoming releases. Showing local preview.
-            </p>
+        {error ? (
+          <div className="p-12 text-center border border-zinc-200 text-xs font-mono uppercase tracking-widest text-zinc-400">
+            Unable to load release schedule.
           </div>
-        )}
-
-        {!error && upcoming.length === 0 && (
-          <div className="text-center py-24 bg-zinc-50 rounded-2xl border border-zinc-200">
-            <Bell className="h-8 w-8 text-zinc-400 mx-auto mb-3" />
-            <p className="text-zinc-900 font-bold text-lg">No upcoming releases at the moment.</p>
-            <p className="text-sm text-zinc-500 mt-1">
-              Check back soon or follow our newsletter for the next batch announcement.
-            </p>
+        ) : upcoming.length === 0 ? (
+          <div className="p-16 text-center border border-zinc-200 text-xs font-mono uppercase tracking-widest text-zinc-400">
+            NO UPCOMING SILHOUETTES AT THIS TIME
           </div>
-        )}
-
-        {!error && upcoming.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {upcoming.map((product, i) => (
               <ProductCard key={product.id} product={product} priority={i < 2} />
             ))}

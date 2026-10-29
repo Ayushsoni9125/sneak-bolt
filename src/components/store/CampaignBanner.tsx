@@ -1,117 +1,110 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Award, Compass } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export function CampaignBanner() {
   return (
-    <section className="py-20 md:py-28 bg-zinc-50 border-y border-zinc-200/80">
+    <section className="py-20 md:py-28 bg-[#fafafa] border-y border-zinc-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         {/* Campaign Header */}
-        <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200 pb-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-zinc-200 text-zinc-900 text-xs font-bold uppercase tracking-wider mb-3 shadow-2xs">
-              <Compass className="h-3.5 w-3.5 text-amber-600" />
-              <span>Editorial Series 04</span>
+            <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase mb-2">
+              <span>EDITORIAL</span>
+              <span>{'//'}</span>
+              <span>PROVENANCE & ARCHITECTURE</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-zinc-950 uppercase tracking-tight">
-              Materials & Craftsmanship
+            <h2 className="text-2xl sm:text-4xl font-black text-zinc-950 uppercase tracking-tight">
+              MATERIALS OBSESSION
             </h2>
-            <p className="text-sm sm:text-base text-zinc-600 mt-2 max-w-xl">
-              From Okayama selvedge denim to vegetable-tanned Italian Vachetta. Every silhouette represents an obsession with tactile permanence.
+            <p className="text-xs sm:text-sm text-zinc-600 mt-2 max-w-xl font-sans">
+              From 14oz Okayama selvedge denim to vegetable-tanned Tuscan Vachetta. Every silhouette represents an uncompromising focus on tactile permanence.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-500">
-            <Award className="h-4 w-4 text-amber-600" />
-            <span>Limited Production Verified</span>
+          <div className="text-[11px] font-mono tracking-widest uppercase text-zinc-500">
+            FLORENCE • OKAYAMA • CIVITANOVA
           </div>
         </div>
 
-        {/* Asymmetric lookbook grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[520px]">
-          {/* Main Hero Card */}
-          <div className="relative lg:col-span-7 overflow-hidden rounded-3xl bg-white border border-zinc-200 shadow-sm group">
-            <div className="relative h-[380px] lg:h-full w-full">
+        {/* Asymmetrical Editorial Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Main Hero Lookbook */}
+          <div className="lg:col-span-7 bg-white border border-zinc-200 group flex flex-col justify-between">
+            <div className="p-4 border-b border-zinc-100 flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+              <span>PROVENANCE STUDY 01</span>
+              <span>TUSCAN OILED CALFSKIN</span>
+            </div>
+
+            <div className="relative aspect-16/10 w-full overflow-hidden bg-zinc-50">
               <Image
                 src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1200&q=85"
-                alt="Campaign — Obsidian Low Prime"
+                alt="Obsidian Low Prime Atelier Study"
                 fill
                 className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 1024px) 100vw, 60vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute bottom-8 left-8 right-8 text-white">
-                <span className="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[11px] font-black uppercase tracking-wider text-white inline-block mb-3">
-                  STREETWEAR ARCHIVE
-                </span>
-                <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tight">
-                  The Obsidian Low
+            </div>
+
+            <div className="p-6 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-base font-black uppercase text-zinc-950 tracking-tight">
+                  The Obsidian Low Prime
                 </h3>
-                <p className="text-xs sm:text-sm text-zinc-200 mt-1 max-w-md">
-                  Tumbled oiled calfskin with reinforced double-stitch detailing and a natural gum cupsole.
+                <p className="text-xs text-zinc-500 mt-1 max-w-md font-sans">
+                  Double-needle seam reinforcement over an artisan natural gum rubber cupsole.
                 </p>
-                <Link
-                  href="/sneakers/obsidian-low"
-                  className="mt-4 inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white hover:text-amber-400 transition-colors"
-                >
-                  <span>Explore Design Specs</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
               </div>
+
+              <Link
+                href="/sneakers/obsidian-low"
+                className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-zinc-950 hover:text-zinc-600 transition-colors shrink-0"
+              >
+                <span>SPECIFICATIONS</span>
+                <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
           </div>
 
-          {/* Right Column Stack */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
-            {/* Upper Card */}
-            <div className="relative h-[250px] overflow-hidden rounded-3xl bg-white border border-zinc-200 shadow-sm group">
-              <Image
-                src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=900&q=85"
-                alt="Velocity campaign shot"
-                fill
-                className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                sizes="(max-width: 1024px) 100vw, 40vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent" />
-              <div className="absolute bottom-6 left-6 right-6 text-white">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                  AERODYNAMIC LAB
-                </span>
-                <p className="text-xl font-black uppercase tracking-tight mt-0.5">
-                  Velocity Neo Chassis
+          {/* Right Editorial Story Cards */}
+          <div className="lg:col-span-5 flex flex-col gap-8 justify-between">
+            {/* Story 1 */}
+            <div className="bg-white border border-zinc-200 p-6 flex flex-col justify-between flex-1">
+              <div>
+                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-400 uppercase mb-3">
+                  <span>ATELIER NOTE</span>
+                  <span>MARGOM CUPSOLE</span>
+                </div>
+                <h4 className="text-sm font-black uppercase tracking-tight text-zinc-950">
+                  Vulcanized Italian Rubber
+                </h4>
+                <p className="text-xs text-zinc-600 leading-relaxed mt-2 font-sans">
+                  Poured and vulcanized in Civitanova Marche since 1952. Provides 300% more abrasion resistance than standard compressed EVA foam soles.
                 </p>
-                <Link
-                  href="/sneakers/velocity"
-                  className="text-xs font-bold text-zinc-300 hover:text-white mt-1 inline-flex items-center gap-1"
-                >
-                  View Prototype →
-                </Link>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-zinc-100 text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+                GUARANTEED RE-SOLEABLE ATELIER SERVICE
               </div>
             </div>
 
-            {/* Lower Card */}
-            <div className="relative h-[250px] overflow-hidden rounded-3xl bg-white border border-zinc-200 shadow-sm group">
-              <Image
-                src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=900&q=85"
-                alt="Shadow High campaign shot"
-                fill
-                className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                sizes="(max-width: 1024px) 100vw, 40vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent" />
-              <div className="absolute bottom-6 left-6 right-6 text-white">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-red-400">
-                  VAULT ARCHIVE
-                </span>
-                <p className="text-xl font-black uppercase tracking-tight mt-0.5">
-                  Shadow High Blackout
+            {/* Story 2 */}
+            <div className="bg-white border border-zinc-200 p-6 flex flex-col justify-between flex-1">
+              <div>
+                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-400 uppercase mb-3">
+                  <span>AUTHENTICITY LEDGER</span>
+                  <span>ENCRYPTED NFC</span>
+                </div>
+                <h4 className="text-sm font-black uppercase tracking-tight text-zinc-950">
+                  Cryptographic Tangible Verification
+                </h4>
+                <p className="text-xs text-zinc-600 leading-relaxed mt-2 font-sans">
+                  Tap any NFC-enabled smartphone to the interior tongue label to verify digital provenance, batch serial number, and collector registration.
                 </p>
-                <Link
-                  href="/sneakers/shadow-high"
-                  className="text-xs font-bold text-zinc-300 hover:text-white mt-1 inline-flex items-center gap-1"
-                >
-                  Join Waitlist →
-                </Link>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-zinc-100 text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+                ZERO REPLICAS TOLERANCE
               </div>
             </div>
           </div>

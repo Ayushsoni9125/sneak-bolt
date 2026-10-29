@@ -8,8 +8,25 @@ export interface Product {
   price: number;
   image_url: string;
   availability: Availability;
+  category?: string;
+  colorway?: string;
+  sku?: string;
+  materials?: string;
+  gallery?: string[];
+  stock_count?: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface CartItem {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  image_url: string;
+  size: string;
+  colorway?: string;
+  quantity: number;
 }
 
 export interface WaitlistEntry {
