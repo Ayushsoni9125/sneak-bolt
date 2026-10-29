@@ -14,7 +14,7 @@ export function UpcomingDrops({ products }: UpcomingDropsProps) {
   if (upcoming.length === 0) return null;
 
   return (
-    <section className="py-20 md:py-28 bg-white border-b border-zinc-200">
+    <section className="py-14 sm:py-20 md:py-28 bg-white border-b border-zinc-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 border-b border-zinc-200 pb-6">
           <div>

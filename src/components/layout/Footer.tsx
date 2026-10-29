@@ -7,9 +7,9 @@ export function Footer() {
   return (
     <footer className="border-t border-zinc-200 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-16 lg:py-20">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 lg:gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 sm:gap-10 lg:gap-12">
           {/* Brand info */}
-          <div className="col-span-2">
+          <div className="col-span-1 sm:col-span-2">
             <Link href="/" className="inline-block mb-3">
               <span className="font-black text-base sm:text-lg tracking-[0.2em] text-zinc-950 uppercase">
                 SNEAKERDROP

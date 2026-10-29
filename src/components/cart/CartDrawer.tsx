@@ -143,12 +143,12 @@ export function CartDrawer() {
               {items.map((item) => (
                 <li key={`${item.id}-${item.size}`} className="py-4 flex gap-4 items-start">
                   {/* Thumbnail */}
-                  <div className="relative h-20 w-20 bg-zinc-50 border border-zinc-200 shrink-0 overflow-hidden">
+                  <div className="relative h-20 w-20 shrink-0 flex items-center justify-center">
                     <Image
                       src={item.image_url}
                       alt={item.name}
                       fill
-                      className="object-cover object-center"
+                      className="object-contain object-center"
                       sizes="80px"
                     />
                   </div>

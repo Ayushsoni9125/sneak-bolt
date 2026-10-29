@@ -394,12 +394,12 @@ export function ProductViewInteractive({ product }: Props) {
         >
           <div className="mx-auto max-w-7xl flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="relative h-10 w-10 bg-zinc-50 border border-zinc-200 shrink-0">
+              <div className="relative h-10 w-10 shrink-0">
                 <Image
                   src={product.image_url}
                   alt={product.name}
                   fill
-                  className="object-cover object-center"
+                  className="object-contain object-center"
                   sizes="40px"
                 />
               </div>

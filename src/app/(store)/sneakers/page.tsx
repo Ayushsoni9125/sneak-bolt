@@ -65,10 +65,10 @@ export default async function CollectionPage({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 py-10">
         {/* Filter bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-10 border-b border-zinc-200">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none text-xs font-mono tracking-widest">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 text-xs font-mono tracking-widest scrollbar-none">
             <Link
               href="/sneakers"
-              className={`px-4 py-2 border transition-all ${
+              className={`px-3 sm:px-4 py-2 border transition-all shrink-0 ${
                 !activeFilter
                   ? 'bg-zinc-950 text-white border-zinc-950 font-bold'
                   : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-950 hover:text-zinc-950'
@@ -91,7 +91,7 @@ export default async function CollectionPage({
                 <Link
                   key={key}
                   href={`/sneakers?filter=${key}`}
-                  className={`px-4 py-2 border transition-all whitespace-nowrap ${
+                  className={`px-3 sm:px-4 py-2 border transition-all whitespace-nowrap shrink-0 ${
                     isSelected
                       ? 'bg-zinc-950 text-white border-zinc-950 font-bold'
                       : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-950 hover:text-zinc-950'
@@ -103,7 +103,7 @@ export default async function CollectionPage({
             })}
           </div>
 
-          <div className="text-[11px] font-mono tracking-widest text-zinc-400 uppercase">
+          <div className="text-[10px] sm:text-[11px] font-mono tracking-widest text-zinc-400 uppercase">
             DISPLAYING {filtered.length} OF {products.length} SILHOUETTES
           </div>
         </div>
@@ -126,7 +126,7 @@ export default async function CollectionPage({
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 sm:gap-x-10 sm:gap-y-16 lg:gap-x-12 lg:gap-y-20">
             {filtered.map((product, i) => (
               <ProductCard key={product.id} product={product} priority={i < 3} />
             ))}

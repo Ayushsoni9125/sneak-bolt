@@ -12,7 +12,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
   const featured = products.slice(0, 6);
 
   return (
-    <section className="py-20 md:py-28 mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 bg-white">
+    <section className="py-14 sm:py-20 md:py-28 mx-auto max-w-7xl px-4 sm:px-6 lg:px-10 bg-white">
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 border-b border-zinc-200 pb-6">
         <div>
@@ -45,7 +45,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
           No silhouettes currently listed in vault.
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16 lg:gap-x-14 lg:gap-y-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 sm:gap-x-10 sm:gap-y-16 lg:gap-x-14 lg:gap-y-20">
           {featured.map((product, i) => (
             <ProductCard key={product.id} product={product} priority={i === 0} />
           ))}

@@ -40,9 +40,9 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
   return (
     <>
       {/* Top Luxury Announcement Ticker */}
-      <header className="fixed top-0 inset-x-0 z-40 bg-zinc-950 text-white text-[10px] font-mono tracking-[0.25em] uppercase py-2 px-4 text-center border-b border-zinc-800">
-        <div className="flex items-center justify-center gap-6 overflow-hidden">
-          <span>COMPLIMENTARY WORLDWIDE EXPRESS DISPATCH ON ALL VAULT RELEASES</span>
+      <header className="fixed top-0 inset-x-0 z-40 bg-zinc-950 text-white text-[9px] sm:text-[10px] font-mono tracking-[0.15em] sm:tracking-[0.25em] uppercase h-[32px] px-3 sm:px-4 flex items-center justify-center border-b border-zinc-800">
+        <div className="flex items-center justify-center gap-3 sm:gap-6 overflow-hidden truncate">
+          <span className="truncate">COMPLIMENTARY WORLDWIDE EXPRESS DISPATCH</span>
           <span className="hidden sm:inline text-zinc-600">•</span>
           <span className="hidden sm:inline">SERIALIZED HANDCRAFTED FOOTWEAR</span>
         </div>
@@ -51,8 +51,8 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
       {/* Main Navigation */}
       <nav
         className={cn(
-          'fixed top-[33px] inset-x-0 z-40 transition-all duration-200 bg-white/95 backdrop-blur-md border-b border-zinc-200/90',
-          scrolled ? 'py-3.5 shadow-[0_2px_12px_rgba(0,0,0,0.03)]' : 'py-4'
+          'fixed top-[32px] inset-x-0 z-40 transition-all duration-200 bg-white/95 backdrop-blur-md border-b border-zinc-200/90',
+          scrolled ? 'py-3 shadow-[0_2px_12px_rgba(0,0,0,0.03)]' : 'py-3.5 sm:py-4'
         )}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
