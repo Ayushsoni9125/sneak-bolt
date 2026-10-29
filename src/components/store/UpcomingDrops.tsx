@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import type { Product } from '@/types';
 import { AvailabilityBadge } from '@/components/products/AvailabilityBadge';
+import { formatPrice } from '@/lib/utils';
 
 interface UpcomingDropsProps {
   products: Product[];
@@ -84,7 +85,7 @@ export function UpcomingDrops({ products }: UpcomingDropsProps) {
 
                 <div className="mt-6 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs font-mono tracking-wider">
                   <span className="font-bold text-zinc-950">
-                    ${product.price.toFixed(2)} USD
+                    {formatPrice(product.price, true)} INR
                   </span>
                   <span className="text-zinc-950 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-bold">
                     <span>WAITLIST</span>

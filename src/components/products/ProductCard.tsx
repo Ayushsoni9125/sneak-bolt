@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { AvailabilityBadge } from './AvailabilityBadge';
 import type { Product } from '@/types';
+import { formatPrice } from '@/lib/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -10,7 +11,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, priority = false }: ProductCardProps) {
-  const formattedPrice = `$${product.price.toFixed(2)}`;
+  const formattedPrice = formatPrice(product.price, true);
 
   return (
     <Link

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { X, Plus, Minus, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { formatPrice } from '@/lib/utils';
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, subtotal, totalCount, clearCart } =
@@ -163,7 +164,7 @@ export function CartDrawer() {
                         {item.name}
                       </Link>
                       <span className="text-xs font-mono font-bold text-zinc-950 shrink-0">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatPrice(item.price * item.quantity, true)}
                       </span>
                     </div>
 
@@ -219,7 +220,7 @@ export function CartDrawer() {
             <div className="space-y-1.5 text-xs">
               <div className="flex justify-between text-zinc-500 font-mono">
                 <span>SUBTOTAL</span>
-                <span className="text-zinc-950 font-bold">${subtotal.toFixed(2)} USD</span>
+                <span className="text-zinc-950 font-bold">{formatPrice(subtotal, true)} INR</span>
               </div>
               <div className="flex justify-between text-zinc-500 font-mono text-[11px]">
                 <span>EXPRESS DISPATCH</span>
@@ -227,7 +228,7 @@ export function CartDrawer() {
               </div>
               <div className="flex justify-between text-zinc-400 font-mono text-[10px]">
                 <span>DUTIES & TAXES</span>
-                <span>CALCULATED AT CHECKOUT</span>
+                <span>INCLUDED IN PRICE</span>
               </div>
             </div>
 
@@ -241,7 +242,7 @@ export function CartDrawer() {
                 <span>AUTHORIZING ALLOCATION...</span>
               ) : (
                 <>
-                  <span>PROCEED TO CHECKOUT • ${subtotal.toFixed(2)}</span>
+                  <span>PROCEED TO CHECKOUT • {formatPrice(subtotal)}</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </>
               )}

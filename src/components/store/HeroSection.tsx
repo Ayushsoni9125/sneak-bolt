@@ -1,16 +1,26 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Box, Image as ImageIcon } from 'lucide-react';
+import { Sneaker3DViewer } from '@/components/3d/Sneaker3DViewer';
+import { formatPrice } from '@/lib/utils';
 
 export function HeroSection() {
+  const [viewMode, setViewMode] = useState<'3d' | 'photo'>('3d');
+
   return (
-    <section className="relative bg-white pt-32 pb-20 lg:pt-40 lg:pb-28 border-b border-zinc-200">
+    <section className="relative bg-white pt-32 pb-16 lg:pt-38 lg:pb-24 border-b border-zinc-200/80 overflow-hidden">
+      {/* Subtle architectural ambient backdrop */}
+      <div className="absolute top-1/4 right-1/4 -z-10 h-[550px] w-[550px] rounded-full bg-zinc-100/70 blur-3xl opacity-70 pointer-events-none" />
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Left Column: Architectural Editorial Statement */}
-          <div className="lg:col-span-7 flex flex-col justify-center">
+          <div className="lg:col-span-6 flex flex-col justify-center">
             {/* Monospace Atelier Tag */}
-            <div className="flex items-center gap-3 mb-6 text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase">
+            <div className="flex items-center gap-3 mb-5 text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase">
               <span className="h-1.5 w-1.5 rounded-full bg-zinc-950" />
               <span>COLLECTION 2026 // LIMITED PRODUCTION</span>
             </div>
@@ -24,18 +34,18 @@ export function HeroSection() {
               MADE IN ITALY.
             </h1>
 
-            <p className="text-sm sm:text-base text-zinc-600 max-w-xl leading-relaxed mb-10 font-sans">
-              A curated vault of serialized court silhouettes, archival high-tops, and experimental prototypes. Each edition is crafted from full-grain Tuscan calfskin with Italian vulcanized rubber cupsoles. Strictly limited production.
+            <p className="text-xs sm:text-sm text-zinc-600 max-w-lg leading-relaxed mb-8 font-sans">
+              A curated vault of serialized court silhouettes, archival high-tops, and experimental prototypes. Handcrafted from full-grain Tuscan calfskin with Italian vulcanized rubber cupsoles.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-10">
               <Link
                 href="/sneakers"
                 id="hero-shop-cta"
                 className="inline-flex items-center justify-center gap-3 bg-zinc-950 hover:bg-zinc-800 text-white px-8 py-4 text-xs font-mono tracking-[0.2em] uppercase transition-colors"
               >
-                <span>EXPLORE THE VAULT [12]</span>
+                <span>EXPLORE VAULT [12]</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
 
@@ -65,53 +75,87 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right Column: Hero Visual Product Frame */}
-          <div className="lg:col-span-5 relative">
-            <Link
-              href="/sneakers/court-one"
-              className="group block relative bg-[#f7f7f8] border border-zinc-200 transition-all duration-300 hover:border-zinc-950"
-            >
-              {/* Product Status Bar */}
-              <div className="p-4 border-b border-zinc-200 flex items-center justify-between text-[10px] font-mono tracking-widest uppercase">
-                <span className="text-zinc-500">FEATURED SILHOUETTE</span>
-                <span className="text-emerald-800 font-bold flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
-                  AVAILABLE NOW
+          {/* Right Column: Organic Floating Sneaker (NO rigid boxed grid) */}
+          <div className="lg:col-span-6 relative flex flex-col items-center justify-center">
+            {/* View Mode Switcher Pills (3D vs Studio Photo) */}
+            <div className="flex items-center gap-2 mb-4 bg-zinc-100 p-1 border border-zinc-200 text-[10px] font-mono tracking-widest uppercase z-20">
+              <button
+                onClick={() => setViewMode('3d')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 transition-all ${
+                  viewMode === '3d'
+                    ? 'bg-zinc-950 text-white font-bold shadow-xs'
+                    : 'text-zinc-600 hover:text-zinc-950'
+                }`}
+              >
+                <Box className="h-3 w-3" />
+                <span>3D INTERACTIVE [360°]</span>
+              </button>
+
+              <button
+                onClick={() => setViewMode('photo')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 transition-all ${
+                  viewMode === 'photo'
+                    ? 'bg-zinc-950 text-white font-bold shadow-xs'
+                    : 'text-zinc-600 hover:text-zinc-950'
+                }`}
+              >
+                <ImageIcon className="h-3 w-3" />
+                <span>STUDIO SHOT</span>
+              </button>
+            </div>
+
+            {/* Seamless Sneaker Stage Container without grid borders */}
+            <div className="relative w-full aspect-4/3 sm:aspect-square flex items-center justify-center">
+              {viewMode === '3d' ? (
+                /* Interactive Three.js 3D Sneaker Canvas */
+                <div className="w-full h-full flex items-center justify-center">
+                  <Sneaker3DViewer autoRotate shoeName="Court One Luxury" />
+                </div>
+              ) : (
+                /* Clean Floating Studio Photo without rigid grid frame */
+                <Link
+                  href="/sneakers/court-one"
+                  className="group relative w-full h-full flex flex-col items-center justify-center"
+                >
+                  <div className="relative w-full h-[320px] sm:h-[400px] transition-transform duration-700 ease-out group-hover:scale-105 group-hover:-translate-y-2">
+                    <Image
+                      src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1200&q=85"
+                      alt="Court One Luxury Edition"
+                      fill
+                      className="object-contain object-center drop-shadow-2xl"
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                  </div>
+
+                  {/* Soft Realistic Contact Shadow */}
+                  <div className="w-3/4 h-8 bg-zinc-950/15 rounded-full blur-xl -mt-6 pointer-events-none" />
+                </Link>
+              )}
+            </div>
+
+            {/* Floating Silhouette Tag & Price in Rupees (₹) */}
+            <div className="mt-4 flex items-center justify-between w-full max-w-md px-2 text-xs font-mono">
+              <Link
+                href="/sneakers/court-one"
+                className="group flex items-center gap-2 text-zinc-950 hover:text-zinc-600 transition-colors"
+              >
+                <span className="font-bold uppercase tracking-tight">
+                  COURT ONE LUXURY
+                </span>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-widest hidden sm:inline">
+                  {'//'} BONE LEATHER
+                </span>
+                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+              </Link>
+
+              <div className="flex items-baseline gap-1 font-bold text-zinc-950">
+                <span className="text-sm font-mono">{formatPrice(28999)}</span>
+                <span className="text-[9px] text-zinc-400 font-normal uppercase tracking-wider">
+                  INR
                 </span>
               </div>
-
-              {/* Sneaker Image */}
-              <div className="relative aspect-4/3 sm:aspect-square w-full overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&q=85"
-                  alt="Court One Luxury"
-                  fill
-                  className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                />
-              </div>
-
-              {/* Bottom Meta */}
-              <div className="p-5 border-t border-zinc-200 bg-white flex items-baseline justify-between">
-                <div>
-                  <h3 className="text-sm font-bold tracking-tight text-zinc-950 uppercase group-hover:text-zinc-600 transition-colors">
-                    Court One Luxury
-                  </h3>
-                  <p className="text-[10px] font-mono text-zinc-400 tracking-widest uppercase mt-0.5">
-                    REF: SD-CR01-ITA // Nappa Calfskin
-                  </p>
-                </div>
-                <div className="text-right">
-                  <span className="text-sm font-mono font-bold text-zinc-950">
-                    $340.00
-                  </span>
-                  <span className="block text-[9px] font-mono text-zinc-400 tracking-wider">
-                    USD
-                  </span>
-                </div>
-              </div>
-            </Link>
+            </div>
           </div>
         </div>
       </div>

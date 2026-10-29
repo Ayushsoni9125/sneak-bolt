@@ -20,7 +20,7 @@ describe('ProductCard', () => {
     render(<ProductCard product={mockProduct} />);
 
     expect(screen.getByText('Court One')).toBeInTheDocument();
-    expect(screen.getByText('$195.00')).toBeInTheDocument();
+    expect(screen.getByText('₹195.00')).toBeInTheDocument();
     expect(screen.getByText(/Heritage leather court shoe/i)).toBeInTheDocument();
   });
 

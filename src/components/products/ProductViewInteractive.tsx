@@ -10,11 +10,15 @@ import {
   ChevronDown,
   ArrowRight,
   Sparkles,
+  Box,
+  Camera,
 } from 'lucide-react';
 import type { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { AvailabilityBadge } from '@/components/products/AvailabilityBadge';
 import { WaitlistForm } from '@/components/forms/WaitlistForm';
+import { Sneaker3DViewer } from '@/components/3d/Sneaker3DViewer';
+import { formatPrice } from '@/lib/utils';
 
 interface Props {
   product: Product;
@@ -31,6 +35,7 @@ const SIZES_DATA: Record<SizeSystem, string[]> = {
 
 export function ProductViewInteractive({ product }: Props) {
   const { addItem } = useCart();
+  const [viewMode, setViewMode] = useState<'3d' | 'gallery'>('3d');
   const [selectedAngle, setSelectedAngle] = useState(0);
   const [sizeSystem, setSizeSystem] = useState<SizeSystem>('US');
   const [selectedSize, setSelectedSize] = useState<string>('9.5');
@@ -86,37 +91,73 @@ export function ProductViewInteractive({ product }: Props) {
   return (
     <div className="relative">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-        {/* Left Column: Gallery */}
+        {/* Left Column: Visual Showcase (Interactive 3D / Gallery) */}
         <div className="lg:col-span-7 flex flex-col gap-4">
-          {/* Main Stage */}
-          <div className="relative aspect-square w-full bg-zinc-50 border border-zinc-200 overflow-hidden group">
-            <Image
-              src={gallery[selectedAngle] || product.image_url}
-              alt={`${product.name} view ${selectedAngle + 1}`}
-              fill
-              className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
-              priority
-              sizes="(max-width: 1024px) 100vw, 60vw"
-            />
+          {/* Mode Switcher (3D Model vs High-Res Photos) */}
+          <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+            <div className="flex items-center gap-2 bg-zinc-100 p-1 border border-zinc-200 text-[10px] font-mono tracking-widest uppercase">
+              <button
+                onClick={() => setViewMode('3d')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 transition-all ${
+                  viewMode === '3d'
+                    ? 'bg-zinc-950 text-white font-bold shadow-xs'
+                    : 'text-zinc-600 hover:text-zinc-950'
+                }`}
+              >
+                <Box className="h-3 w-3" />
+                <span>3D INTERACTIVE [360°]</span>
+              </button>
 
-            {/* Availability Badge */}
-            <div className="absolute top-4 left-4 z-10">
-              <AvailabilityBadge availability={product.availability} />
+              <button
+                onClick={() => setViewMode('gallery')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 transition-all ${
+                  viewMode === 'gallery'
+                    ? 'bg-zinc-950 text-white font-bold shadow-xs'
+                    : 'text-zinc-600 hover:text-zinc-950'
+                }`}
+              >
+                <Camera className="h-3 w-3" />
+                <span>STUDIO GALLERY</span>
+              </button>
             </div>
 
-            {/* Serial / Edition Tag */}
-            <div className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-xs px-2.5 py-1 border border-zinc-200 text-[10px] font-mono tracking-widest text-zinc-600 uppercase">
+            <div className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase hidden sm:block">
               {product.sku || 'REF: ARCHIVE'}
-            </div>
-
-            {/* View Index Indicator */}
-            <div className="absolute bottom-4 right-4 z-10 bg-white/90 backdrop-blur-xs px-2 py-0.5 border border-zinc-200 text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
-              0{selectedAngle + 1} / 0{gallery.length}
             </div>
           </div>
 
-          {/* Multi-angle Thumbnails Filmstrip */}
-          {gallery.length > 1 && (
+          {/* Main Visual Stage */}
+          <div className="relative aspect-square w-full bg-[#f8f8f9] border border-zinc-200 overflow-hidden">
+            {viewMode === '3d' ? (
+              /* Full 3D Interactive Three.js Model */
+              <div className="w-full h-full flex items-center justify-center">
+                <Sneaker3DViewer autoRotate shoeName={product.name} />
+              </div>
+            ) : (
+              /* High-Res Studio Angle Gallery */
+              <div className="relative w-full h-full group">
+                <Image
+                  src={gallery[selectedAngle] || product.image_url}
+                  alt={`${product.name} view ${selectedAngle + 1}`}
+                  fill
+                  className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                />
+
+                <div className="absolute top-4 left-4 z-10">
+                  <AvailabilityBadge availability={product.availability} />
+                </div>
+
+                <div className="absolute bottom-4 right-4 z-10 bg-white/90 backdrop-blur-xs px-2.5 py-1 border border-zinc-200 text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
+                  VIEW 0{selectedAngle + 1} / 0{gallery.length}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Multi-angle Thumbnails Filmstrip (when in gallery mode) */}
+          {viewMode === 'gallery' && gallery.length > 1 && (
             <div className="grid grid-cols-4 gap-3">
               {gallery.map((img, idx) => (
                 <button
@@ -186,12 +227,13 @@ export function ProductViewInteractive({ product }: Props) {
               </p>
             )}
 
+            {/* Price in Rupees (₹) */}
             <div className="flex items-baseline gap-3 mt-4">
               <span className="text-2xl sm:text-3xl font-black text-zinc-950 font-mono">
-                ${product.price.toFixed(2)}
+                {formatPrice(product.price, true)}
               </span>
               <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
-                USD // INCL. TAX
+                INR // INCL. ALL TAXES
               </span>
             </div>
           </div>
@@ -259,7 +301,7 @@ export function ProductViewInteractive({ product }: Props) {
                 )}
               </div>
 
-              {/* Add to Cart CTA */}
+              {/* Add to Cart CTA with Rupees */}
               <button
                 onClick={handleAddToCart}
                 id="add-to-cart-btn"
@@ -277,7 +319,7 @@ export function ProductViewInteractive({ product }: Props) {
                 ) : (
                   <>
                     <span>
-                      ADD TO BAG • ${product.price.toFixed(2)} USD
+                      ADD TO BAG • {formatPrice(product.price)}
                     </span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </>
@@ -410,7 +452,7 @@ export function ProductViewInteractive({ product }: Props) {
                   {product.name}
                 </div>
                 <div className="text-[10px] font-mono text-zinc-500">
-                  {sizeSystem} {selectedSize} • ${product.price.toFixed(2)} USD
+                  {sizeSystem} {selectedSize} • {formatPrice(product.price, true)} INR
                 </div>
               </div>
             </div>

@@ -7,19 +7,19 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'court-one',
     description:
       'Engineered in Civitanova Marche, Italy. The Court One combines full-grain Tuscan calfskin with an Italian Margom vulcanised rubber cupsole. Hand-buffed tonal waxed cotton laces and an anatomic calf-lined footbed provide peerless comfort.',
-    price: 340.0,
-    image_url: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&q=85',
+    price: 28999.0,
+    image_url: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1200&q=85',
     availability: 'available',
     category: 'Court Silhouette',
-    colorway: 'Crimson Scarlet / Raw Bone',
+    colorway: 'Chalk White / Bone Leather',
     sku: 'SD-CR01-ITA',
     materials: '100% Full-grain Tuscan Calfskin, Margom Cupsole',
     stock_count: 8,
     gallery: [
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&q=85',
-      'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=1200&q=85',
+      'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1200&q=85',
       'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1200&q=85',
-      'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1200&q=85',
+      'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1200&q=85',
+      'https://images.unsplash.com/photo-1512374382149-233c42b6683b?w=1200&q=85',
     ],
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-01-01T00:00:00Z',
@@ -30,7 +30,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'shadow-high',
     description:
       'Archival high-collar court silhouette handcrafted from oiled Japanese nubuck with carbon-fibre midfoot torsion shanks. Features custom matte-black metal eyelets and a serialized NFC verification tag embedded in the tongue.',
-    price: 420.0,
+    price: 34999.0,
     image_url: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1200&q=85',
     availability: 'available',
     category: 'High Archive',
@@ -52,7 +52,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'velocity',
     description:
       'Kinetic propulsion racer. Constructed with an ultra-light aerodynamic mono-weave knit upper, asymmetric lock-down cabling, and dual-density supercritical foam dampening. Releasing in strict batch runs.',
-    price: 295.0,
+    price: 24500.0,
     image_url: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=1200&q=85',
     availability: 'available',
     category: 'Technical Runner',
@@ -74,7 +74,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'obsidian-low',
     description:
       'Minimalist luxury perfected. Precision-cut from tumbled French calfskin with reinforced double-stitch paneling, raw suede lining, and a bespoke natural gum cupsole. Subtle debossed serial numbering on lateral heel.',
-    price: 310.0,
+    price: 26000.0,
     image_url: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1200&q=85',
     availability: 'available',
     category: 'Court Silhouette',
@@ -96,7 +96,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'meridian-runner',
     description:
       'Architectural 3D sculpted geometry. Designed with an open-cell technical spacer mesh core layered over an exaggerated dual-density EVA chassis. Delivers sculptural presence without compromising lightweight comfort.',
-    price: 380.0,
+    price: 32000.0,
     image_url: 'https://images.unsplash.com/photo-1584735175315-9d5df23860e6?w=1200&q=85',
     availability: 'available',
     category: 'Technical Runner',
@@ -118,7 +118,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'element-zero',
     description:
       'Deconstructivist laboratory footwear. Stripped of all superfluous ornament, the Element Zero pairs matte technical ballistic nylon with raw vegetable-tanned overlays on a decoupled split-sole platform. Strictly numbered edition of 250 pairs.',
-    price: 460.0,
+    price: 38500.0,
     image_url: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=1200&q=85',
     availability: 'available',
     category: 'Prototype',
@@ -140,7 +140,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'apex-trail-90',
     description:
       'Gorpcore redefined through luxury atelier techniques. Waterproof Cordura 500D chassis with bonded TPU mudguards, Kevlar speed lacing, and an aggressive Vibram Megagrip lugged outsole for seamless transitions between alpine trails and urban galleries.',
-    price: 325.0,
+    price: 27500.0,
     image_url: 'https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?w=1200&q=85',
     availability: 'upcoming',
     category: 'Technical Runner',
@@ -162,7 +162,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'ghost-knit-retro',
     description:
       'Seamless mono-weave jacquard knit upper hugs the contours of the foot like a bespoke second skin. Features an unlined tongue, French terry collar, and an energy-rebounding nitrogen-infused capsule bed.',
-    price: 280.0,
+    price: 23500.0,
     image_url: 'https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=1200&q=85',
     availability: 'upcoming',
     category: 'Court Silhouette',
@@ -184,7 +184,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'komorebi-luxe',
     description:
       'Inspired by the sunlight filtering through Japanese forest canopies. Crafted from artisanal 14oz Okayama selvedge denim, natural sashiko hand-stitching, and an indigo-dipped vegetable tanned heel tab. Each pair wears with unique patina.',
-    price: 395.0,
+    price: 33000.0,
     image_url: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1200&q=85',
     availability: 'upcoming',
     category: 'High Archive',
@@ -195,7 +195,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     gallery: [
       'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1200&q=85',
       'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1200&q=85',
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&q=85',
+      'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1200&q=85',
     ],
     created_at: '2026-01-09T00:00:00Z',
     updated_at: '2026-01-09T00:00:00Z',
@@ -206,7 +206,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'stratum-low',
     description:
       'Raw-edge layered English suede with exposed foam borders and asymmetric perforations across the medial quarter. Finished with a semi-translucent smoke crystal cupsole and waxed linen laces.',
-    price: 350.0,
+    price: 29500.0,
     image_url: 'https://images.unsplash.com/photo-1512374382149-233c42b6683b?w=1200&q=85',
     availability: 'upcoming',
     category: 'Court Silhouette',
@@ -228,7 +228,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'vortex-prime',
     description:
       'Engineered for track and pavement speed trials. Features a featherlight mono-filament composite shell with internal aramid ribbons and an energy-returning Pebax plate. Strictly sold out from Drop 01.',
-    price: 315.0,
+    price: 26500.0,
     image_url: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=1200&q=85',
     availability: 'sold_out',
     category: 'Technical Runner',
@@ -250,7 +250,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     slug: 'hyperion-high-88',
     description:
       'Archival 1988 pro court championship silhouette reissued with modern internal ergonomics. Heavyweight 2.2mm full-grain leather, padded collar, and vintage off-white aged cupsole finish. Limited collector edition.',
-    price: 440.0,
+    price: 36999.0,
     image_url: 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=1200&q=85',
     availability: 'sold_out',
     category: 'High Archive',

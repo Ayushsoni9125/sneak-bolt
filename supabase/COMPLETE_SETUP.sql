@@ -114,8 +114,8 @@ values
     'Court One Luxury',
     'court-one',
     'The Court One is where legacy begins. Crafted from premium full-grain Italian leather with a vulcanised rubber outsole, it carries decades of heritage into every step. Features tonal waxed cotton laces and an ultra-plush memory foam insole.',
-    195.00,
-    'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1000&q=85',
+    28999.00,
+    'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1000&q=85',
     'available'
   ),
   (
