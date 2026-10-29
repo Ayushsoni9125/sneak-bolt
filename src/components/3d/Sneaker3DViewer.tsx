@@ -1,448 +1,356 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import * as THREE from 'three';
-import { RotateCw, Compass, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
+import { RotateCw, RefreshCw, Compass, Info, Check } from 'lucide-react';
 
 interface Sneaker3DViewerProps {
-  initialColor?: string;
   autoRotate?: boolean;
   className?: string;
   shoeName?: string;
 }
 
-const COLORWAYS = [
-  { name: 'Chalk Bone', upper: 0xf5f5f4, sole: 0xe7e5e4, accents: 0x1c1917, laces: 0xd6d3d1 },
-  { name: 'Triple Onyx', upper: 0x18181b, sole: 0x27272a, accents: 0x3f3f46, laces: 0x09090b },
-  { name: 'Raw Vachetta', upper: 0xd97706, sole: 0xfafaf9, accents: 0x92400e, laces: 0xfef3c7 },
-  { name: 'Royal Heritage', upper: 0x2563eb, sole: 0xffffff, accents: 0x1e3a8a, laces: 0xffffff },
+interface ColorwayData {
+  name: string;
+  colorwayLabel: string;
+  frames: {
+    src: string;
+    label: string;
+    angle: string;
+  }[];
+}
+
+const COLORWAYS: ColorwayData[] = [
+  {
+    name: 'Chalk Bone',
+    colorwayLabel: 'Chalk White / Bone Italian Leather',
+    frames: [
+      {
+        src: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1200&q=85',
+        label: 'Lateral Studio Profile',
+        angle: '000°',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1200&q=85',
+        label: 'Three-Quarter Beauty Angle',
+        angle: '045°',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=1200&q=85',
+        label: 'Front Toe-Box & Lacing',
+        angle: '090°',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1512374382149-233c42b6683b?w=1200&q=85',
+        label: 'Medial Architectural Arch',
+        angle: '180°',
+      },
+    ],
+  },
+  {
+    name: 'Triple Onyx',
+    colorwayLabel: 'Pitch Black Nubuck & Carbon',
+    frames: [
+      {
+        src: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1200&q=85',
+        label: 'Lateral Noir Profile',
+        angle: '000°',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?w=1200&q=85',
+        label: 'Quarter Archival Stance',
+        angle: '045°',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=1200&q=85',
+        label: 'Medial Counter View',
+        angle: '180°',
+      },
+    ],
+  },
+  {
+    name: 'Desert Silt',
+    colorwayLabel: 'Layered English Suede / Gum',
+    frames: [
+      {
+        src: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=1200&q=85',
+        label: 'Suede Lateral Stance',
+        angle: '000°',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?w=1200&q=85',
+        label: 'Quarter Lugged Stance',
+        angle: '045°',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=1200&q=85',
+        label: 'Dynamic Speed Profile',
+        angle: '180°',
+      },
+    ],
+  },
+  {
+    name: 'Glacier White',
+    colorwayLabel: 'Sculpted Spacer Mesh / Off-White',
+    frames: [
+      {
+        src: 'https://images.unsplash.com/photo-1584735175315-9d5df23860e6?w=1200&q=85',
+        label: 'Glacier Lateral Runner',
+        angle: '000°',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=1200&q=85',
+        label: 'Air-Knit Quarter Profile',
+        angle: '045°',
+      },
+      {
+        src: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=1200&q=85',
+        label: 'Minimalist Toe-Box',
+        angle: '090°',
+      },
+    ],
+  },
+];
+
+const HOTSPOTS = [
+  {
+    id: 'leather',
+    top: '38%',
+    left: '42%',
+    title: 'Tuscan Calfskin Upper',
+    desc: '1.4mm full-grain leather, drum-dyed with vegetable extracts.',
+  },
+  {
+    id: 'sole',
+    top: '72%',
+    left: '60%',
+    title: 'Margom Vulcanized Sole',
+    desc: 'Italian rubber poured in Civitanova Marche with custom herringbone tread.',
+  },
+  {
+    id: 'laces',
+    top: '28%',
+    left: '52%',
+    title: 'Waxed Cotton Eyestay',
+    desc: 'Tonal double-twisted laces with debossed metal aglets.',
+  },
 ];
 
 export function Sneaker3DViewer({
   autoRotate = true,
   className = '',
 }: Sneaker3DViewerProps) {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const [isRotating, setIsRotating] = useState(autoRotate);
   const [selectedColorway, setSelectedColorway] = useState(0);
-  const [isInteracting, setIsInteracting] = useState(false);
+  const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
+  const [isAutoSpinning, setIsAutoSpinning] = useState(autoRotate);
+  const [showHotspots, setShowHotspots] = useState(false);
+  const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
 
-  // Scene references
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const sneakerGroupRef = useRef<THREE.Group | null>(null);
-  const materialsRef = useRef<{
-    upper: THREE.MeshStandardMaterial;
-    sole: THREE.MeshStandardMaterial;
-    accents: THREE.MeshStandardMaterial;
-    laces: THREE.MeshStandardMaterial;
-  } | null>(null);
+  // 3D Parallax Tilt state
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
 
-  // Interaction tracking
-  const mouseState = useRef({
-    isDown: false,
-    prevX: 0,
-    prevY: 0,
-    velX: 0,
-    velY: 0,
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef({
+    isDragging: false,
+    startX: 0,
+    currentFrame: 0,
   });
 
-  const updateColors = useCallback((cwIndex: number) => {
-    setSelectedColorway(cwIndex);
-    const cw = COLORWAYS[cwIndex];
-    if (materialsRef.current) {
-      materialsRef.current.upper.color.setHex(cw.upper);
-      materialsRef.current.sole.color.setHex(cw.sole);
-      materialsRef.current.accents.color.setHex(cw.accents);
-      materialsRef.current.laces.color.setHex(cw.laces);
-    }
-  }, []);
+  const activeColorway = COLORWAYS[selectedColorway];
+  const frames = activeColorway.frames;
+  const currentFrame = frames[currentFrameIndex % frames.length];
 
-  const resetView = () => {
-    if (sneakerGroupRef.current) {
-      sneakerGroupRef.current.rotation.set(0.15, -0.65, 0);
-      mouseState.current.velX = 0;
-      mouseState.current.velY = 0;
+  // Auto-spin interval
+  useEffect(() => {
+    if (!isAutoSpinning) return;
+
+    const interval = setInterval(() => {
+      setCurrentFrameIndex((prev) => (prev + 1) % frames.length);
+    }, 2400);
+
+    return () => clearInterval(interval);
+  }, [isAutoSpinning, frames.length]);
+
+  // Preload all frames for instant transitions
+  useEffect(() => {
+    frames.forEach((f) => {
+      const img = new window.Image();
+      img.src = f.src;
+    });
+  }, [frames]);
+
+  // Mouse / Touch 360 Drag rotation
+  const handleMouseDown = (e: React.MouseEvent) => {
+    dragRef.current.isDragging = true;
+    dragRef.current.startX = e.clientX;
+    dragRef.current.currentFrame = currentFrameIndex;
+    setIsAutoSpinning(false);
+  };
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    // Parallax 3D tilt calculation
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      setTilt({ x: x * 18, y: -y * 18 });
+    }
+
+    // Drag 360 scrubbing
+    if (!dragRef.current.isDragging) return;
+    const deltaX = e.clientX - dragRef.current.startX;
+    const frameShift = Math.floor(deltaX / 75);
+    const newIdx = (dragRef.current.currentFrame - frameShift + frames.length * 100) % frames.length;
+    setCurrentFrameIndex(newIdx);
+  }, [frames.length]);
+
+  const handleMouseUp = () => {
+    dragRef.current.isDragging = false;
+  };
+
+  // Touch drag support
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      dragRef.current.isDragging = true;
+      dragRef.current.startX = e.touches[0].clientX;
+      dragRef.current.currentFrame = currentFrameIndex;
+      setIsAutoSpinning(false);
     }
   };
 
-  useEffect(() => {
-    const container = mountRef.current;
-    if (!container) return;
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!dragRef.current.isDragging || e.touches.length !== 1) return;
+    const deltaX = e.touches[0].clientX - dragRef.current.startX;
+    const frameShift = Math.floor(deltaX / 65);
+    const newIdx = (dragRef.current.currentFrame - frameShift + frames.length * 100) % frames.length;
+    setCurrentFrameIndex(newIdx);
+  };
 
-    const width = container.clientWidth || 500;
-    const height = container.clientHeight || 450;
+  const handleTouchEnd = () => {
+    dragRef.current.isDragging = false;
+  };
 
-    // 1. Scene
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-
-    // 2. Camera
-    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
-    camera.position.set(0, 0.6, 3.8);
-    cameraRef.current = camera;
-
-    // 3. Renderer with antialiasing and transparent background
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    rendererRef.current = renderer;
-    container.appendChild(renderer.domElement);
-
-    // 4. Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
-    scene.add(ambientLight);
-
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
-    keyLight.position.set(4, 5, 4);
-    keyLight.castShadow = true;
-    keyLight.shadow.mapSize.width = 1024;
-    keyLight.shadow.mapSize.height = 1024;
-    keyLight.shadow.camera.near = 0.5;
-    keyLight.shadow.camera.far = 15;
-    keyLight.shadow.bias = -0.001;
-    scene.add(keyLight);
-
-    const rimLight = new THREE.DirectionalLight(0xdbeafe, 1.6);
-    rimLight.position.set(-4, 3, -3);
-    scene.add(rimLight);
-
-    const fillLight = new THREE.DirectionalLight(0xffedd5, 1.0);
-    fillLight.position.set(0, -3, 3);
-    scene.add(fillLight);
-
-    // 5. Build Procedural Luxury Sneaker Geometry
-    const sneakerGroup = new THREE.Group();
-    sneakerGroupRef.current = sneakerGroup;
-
-    // Materials
-    const initialCw = COLORWAYS[0];
-    const upperMat = new THREE.MeshStandardMaterial({
-      color: initialCw.upper,
-      roughness: 0.35,
-      metalness: 0.05,
-    });
-    const soleMat = new THREE.MeshStandardMaterial({
-      color: initialCw.sole,
-      roughness: 0.7,
-      metalness: 0.02,
-    });
-    const accentMat = new THREE.MeshStandardMaterial({
-      color: initialCw.accents,
-      roughness: 0.25,
-      metalness: 0.1,
-    });
-    const lacesMat = new THREE.MeshStandardMaterial({
-      color: initialCw.laces,
-      roughness: 0.8,
-      metalness: 0.0,
-    });
-
-    materialsRef.current = { upper: upperMat, sole: soleMat, accents: accentMat, laces: lacesMat };
-
-    // --- Sole (Outsole & Midsole) ---
-    // Curved base geometry representing the sculpted Italian Margom sole
-    const soleShape = new THREE.Shape();
-    soleShape.moveTo(-1.25, -0.3);
-    soleShape.lineTo(-1.2, 0.3);
-    soleShape.bezierCurveTo(-1.0, 0.42, -0.2, 0.52, 0.6, 0.5);
-    soleShape.bezierCurveTo(1.2, 0.48, 1.45, 0.38, 1.55, 0.1);
-    soleShape.bezierCurveTo(1.6, -0.15, 1.35, -0.38, 0.6, -0.42);
-    soleShape.bezierCurveTo(-0.2, -0.45, -1.0, -0.38, -1.25, -0.3);
-
-    const extrudeSettings = {
-      steps: 2,
-      depth: 0.22,
-      bevelEnabled: true,
-      bevelThickness: 0.04,
-      bevelSize: 0.03,
-      bevelSegments: 4,
-    };
-    const soleGeo = new THREE.ExtrudeGeometry(soleShape, extrudeSettings);
-    soleGeo.rotateX(Math.PI / 2);
-    soleGeo.center();
-    const soleMesh = new THREE.Mesh(soleGeo, soleMat);
-    soleMesh.position.y = -0.32;
-    soleMesh.castShadow = true;
-    soleMesh.receiveShadow = true;
-    sneakerGroup.add(soleMesh);
-
-    // Tread lines under sole
-    for (let i = -1.0; i <= 1.2; i += 0.25) {
-      const treadGeo = new THREE.BoxGeometry(0.08, 0.02, 0.6);
-      const treadMesh = new THREE.Mesh(treadGeo, soleMat);
-      treadMesh.position.set(i, -0.43, 0);
-      sneakerGroup.add(treadMesh);
-    }
-
-    // --- Main Shoe Upper Body ---
-    const upperGeo = new THREE.CylinderGeometry(0.38, 0.46, 1.8, 24, 8);
-    upperGeo.rotateZ(Math.PI / 2);
-    upperGeo.scale(1.2, 0.68, 0.85);
-    const upperMesh = new THREE.Mesh(upperGeo, upperMat);
-    upperMesh.position.set(0.05, -0.04, 0);
-    upperMesh.castShadow = true;
-    sneakerGroup.add(upperMesh);
-
-    // --- Toe Box Curve ---
-    const toeGeo = new THREE.SphereGeometry(0.36, 24, 16);
-    toeGeo.scale(1.25, 0.62, 0.95);
-    const toeMesh = new THREE.Mesh(toeGeo, upperMat);
-    toeMesh.position.set(0.85, -0.12, 0);
-    toeMesh.castShadow = true;
-    sneakerGroup.add(toeMesh);
-
-    // --- Heel Counter & Collar ---
-    const heelGeo = new THREE.CylinderGeometry(0.32, 0.36, 0.65, 20);
-    heelGeo.scale(0.9, 1.0, 0.85);
-    const heelMesh = new THREE.Mesh(heelGeo, upperMat);
-    heelMesh.position.set(-0.75, 0.16, 0);
-    heelMesh.castShadow = true;
-    sneakerGroup.add(heelMesh);
-
-    // Padded Collar Opening Ring
-    const collarGeo = new THREE.TorusGeometry(0.28, 0.07, 12, 24);
-    collarGeo.rotateX(Math.PI / 2);
-    collarGeo.scale(1.0, 1.2, 1.0);
-    const collarMesh = new THREE.Mesh(collarGeo, accentMat);
-    collarMesh.position.set(-0.62, 0.46, 0);
-    sneakerGroup.add(collarMesh);
-
-    // --- Tongue ---
-    const tongueGeo = new THREE.BoxGeometry(0.85, 0.12, 0.32);
-    tongueGeo.rotateZ(0.4);
-    const tongueMesh = new THREE.Mesh(tongueGeo, accentMat);
-    tongueMesh.position.set(-0.15, 0.28, 0);
-    tongueMesh.castShadow = true;
-    sneakerGroup.add(tongueMesh);
-
-    // Tongue Label Badge (Atelier SD Tag)
-    const tagGeo = new THREE.BoxGeometry(0.18, 0.02, 0.22);
-    tagGeo.rotateZ(0.4);
-    const tagMesh = new THREE.Mesh(tagGeo, upperMat);
-    tagMesh.position.set(-0.06, 0.44, 0);
-    sneakerGroup.add(tagMesh);
-
-    // --- Crossed Laces Eyestay ---
-    for (let l = 0; l < 4; l++) {
-      const lx = 0.08 - l * 0.18;
-      const ly = 0.12 + l * 0.08;
-      const laceGeo = new THREE.CylinderGeometry(0.022, 0.022, 0.38, 8);
-      laceGeo.rotateX(Math.PI / 2);
-      laceGeo.rotateZ(l % 2 === 0 ? 0.25 : -0.25);
-      const laceMesh = new THREE.Mesh(laceGeo, lacesMat);
-      laceMesh.position.set(lx, ly, 0);
-      laceMesh.castShadow = true;
-      sneakerGroup.add(laceMesh);
-    }
-
-    // --- Lateral & Medial Wave Accent Overlays ---
-    const lateralSwoopGeo = new THREE.TorusGeometry(0.65, 0.04, 8, 20, Math.PI * 0.65);
-    lateralSwoopGeo.rotateZ(-0.4);
-    const lateralMesh = new THREE.Mesh(lateralSwoopGeo, accentMat);
-    lateralMesh.position.set(-0.05, 0.02, 0.34);
-    lateralMesh.scale.set(0.9, 0.45, 0.9);
-    sneakerGroup.add(lateralMesh);
-
-    const medialMesh = lateralMesh.clone();
-    medialMesh.position.z = -0.34;
-    medialMesh.scale.z = -0.9;
-    sneakerGroup.add(medialMesh);
-
-    // --- Soft Radial Ground Shadow Plane ---
-    const shadowGeo = new THREE.PlaneGeometry(3.6, 2.2);
-    shadowGeo.rotateX(-Math.PI / 2);
-
-    // Dynamic procedural shadow canvas
-    const shadowCanvas = document.createElement('canvas');
-    shadowCanvas.width = 256;
-    shadowCanvas.height = 256;
-    const shadowCtx = shadowCanvas.getContext('2d');
-    if (shadowCtx) {
-      const gradient = shadowCtx.createRadialGradient(128, 128, 15, 128, 128, 120);
-      gradient.addColorStop(0, 'rgba(15, 15, 18, 0.45)');
-      gradient.addColorStop(0.3, 'rgba(15, 15, 18, 0.25)');
-      gradient.addColorStop(0.7, 'rgba(15, 15, 18, 0.06)');
-      gradient.addColorStop(1, 'rgba(15, 15, 18, 0)');
-      shadowCtx.fillStyle = gradient;
-      shadowCtx.fillRect(0, 0, 256, 256);
-    }
-    const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
-    const shadowMat = new THREE.MeshBasicMaterial({
-      map: shadowTexture,
-      transparent: true,
-      opacity: 0.85,
-      depthWrite: false,
-    });
-    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
-    shadowMesh.position.y = -0.58;
-    scene.add(shadowMesh);
-
-    // Initial beauty angle (facing 3/4 front profile)
-    sneakerGroup.rotation.set(0.15, -0.65, 0);
-    sneakerGroup.position.y = 0.08;
-    scene.add(sneakerGroup);
-
-    // 6. Animation Loop with Inertia
-    let animId: number;
-    const animate = () => {
-      animId = requestAnimationFrame(animate);
-
-      if (sneakerGroupRef.current) {
-        // If auto-rotate is active and not interacting, gently turn
-        if (isRotating && !mouseState.current.isDown) {
-          sneakerGroupRef.current.rotation.y += 0.008;
-        }
-
-        // Apply friction to rotational velocity
-        if (!mouseState.current.isDown) {
-          sneakerGroupRef.current.rotation.y += mouseState.current.velX;
-          sneakerGroupRef.current.rotation.x += mouseState.current.velY;
-          mouseState.current.velX *= 0.92;
-          mouseState.current.velY *= 0.92;
-
-          // Limit vertical tilt
-          sneakerGroupRef.current.rotation.x = Math.max(-0.4, Math.min(0.5, sneakerGroupRef.current.rotation.x));
-        }
-
-        // Subtle floating bounce animation
-        sneakerGroupRef.current.position.y = 0.08 + Math.sin(Date.now() * 0.002) * 0.03;
-      }
-
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    // 7. Mouse & Touch Interaction Handlers
-    const onMouseDown = (e: MouseEvent) => {
-      mouseState.current.isDown = true;
-      mouseState.current.prevX = e.clientX;
-      mouseState.current.prevY = e.clientY;
-      setIsInteracting(true);
-    };
-
-    const onMouseMove = (e: MouseEvent) => {
-      if (!mouseState.current.isDown || !sneakerGroupRef.current) return;
-      const deltaX = (e.clientX - mouseState.current.prevX) * 0.008;
-      const deltaY = (e.clientY - mouseState.current.prevY) * 0.008;
-
-      sneakerGroupRef.current.rotation.y += deltaX;
-      sneakerGroupRef.current.rotation.x += deltaY;
-
-      mouseState.current.velX = deltaX;
-      mouseState.current.velY = deltaY;
-
-      mouseState.current.prevX = e.clientX;
-      mouseState.current.prevY = e.clientY;
-    };
-
-    const onMouseUp = () => {
-      mouseState.current.isDown = false;
-      setIsInteracting(false);
-    };
-
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      if (!cameraRef.current) return;
-      cameraRef.current.position.z += e.deltaY * 0.002;
-      cameraRef.current.position.z = Math.max(2.6, Math.min(5.2, cameraRef.current.position.z));
-    };
-
-    // Touch events for mobile
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        mouseState.current.isDown = true;
-        mouseState.current.prevX = e.touches[0].clientX;
-        mouseState.current.prevY = e.touches[0].clientY;
-        setIsInteracting(true);
-      }
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (!mouseState.current.isDown || !sneakerGroupRef.current || e.touches.length !== 1) return;
-      const deltaX = (e.touches[0].clientX - mouseState.current.prevX) * 0.01;
-      const deltaY = (e.touches[0].clientY - mouseState.current.prevY) * 0.01;
-
-      sneakerGroupRef.current.rotation.y += deltaX;
-      sneakerGroupRef.current.rotation.x += deltaY;
-
-      mouseState.current.velX = deltaX;
-      mouseState.current.velY = deltaY;
-
-      mouseState.current.prevX = e.touches[0].clientX;
-      mouseState.current.prevY = e.touches[0].clientY;
-    };
-
-    const onTouchEnd = () => {
-      mouseState.current.isDown = false;
-      setIsInteracting(false);
-    };
-
-    const domElement = renderer.domElement;
-    domElement.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
-    domElement.addEventListener('wheel', onWheel, { passive: false });
-
-    domElement.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
-    window.addEventListener('touchend', onTouchEnd);
-
-    // 8. Resize Handler
-    const handleResize = () => {
-      if (!container || !rendererRef.current || !cameraRef.current) return;
-      const newW = container.clientWidth;
-      const newH = container.clientHeight;
-      cameraRef.current.aspect = newW / newH;
-      cameraRef.current.updateProjectionMatrix();
-      rendererRef.current.setSize(newW, newH);
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      domElement.removeEventListener('mousedown', onMouseDown);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
-      domElement.removeEventListener('wheel', onWheel);
-
-      domElement.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove', onTouchMove);
-      window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener('resize', handleResize);
-
-      if (container && renderer.domElement.parentNode === container) {
-        container.removeChild(renderer.domElement);
-      }
-      renderer.dispose();
-    };
-  }, [isRotating]);
+  const resetAngle = () => {
+    setCurrentFrameIndex(0);
+    setTilt({ x: 0, y: 0 });
+    setIsAutoSpinning(false);
+  };
 
   return (
     <div
-      className={`relative w-full h-full flex flex-col items-center justify-center select-none ${className}`}
+      ref={containerRef}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => {
+        handleMouseUp();
+        setIsHovering(false);
+        setTilt({ x: 0, y: 0 });
+      }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className={`relative w-full flex flex-col items-center justify-center select-none cursor-grab active:cursor-grabbing ${className}`}
+      style={{ perspective: '1200px' }}
+      title="Drag left/right to rotate sneaker 360°"
     >
-      {/* 3D Canvas Container */}
-      <div
-        ref={mountRef}
-        className="w-full h-[360px] sm:h-[420px] lg:h-[460px] cursor-grab active:cursor-grabbing relative z-10"
-        title="Click and drag to rotate sneaker in 3D"
-      />
-
-      {/* Floating 360 Interaction Prompt */}
-      <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-white/95 backdrop-blur-md px-3 py-1.5 border border-zinc-200 text-[10px] font-mono tracking-widest uppercase text-zinc-900 shadow-sm pointer-events-none">
-        <Compass className={`h-3.5 w-3.5 text-zinc-950 ${isInteracting ? 'animate-spin' : ''}`} />
-        <span>3D ATELIER // DRAG TO ROTATE 360°</span>
+      {/* 360° Studio Angle Indicator Top Tag */}
+      <div className="absolute top-2 left-2 z-20 flex items-center gap-2 bg-white/95 backdrop-blur-md px-3 py-1.5 border border-zinc-200 text-[10px] font-mono tracking-widest uppercase text-zinc-900 shadow-xs pointer-events-none">
+        <Compass className={`h-3.5 w-3.5 text-zinc-950 ${isAutoSpinning ? 'animate-spin' : ''}`} />
+        <span>
+          360° ATELIER // ANGLE {currentFrame.angle}
+        </span>
       </div>
 
-      {/* Interactive Controls Overlay */}
-      <div className="absolute bottom-4 inset-x-4 z-20 flex flex-wrap items-center justify-between gap-3 bg-white/90 backdrop-blur-md p-2.5 border border-zinc-200 text-xs font-mono">
-        {/* Colorway Switcher */}
+      {/* Frame Label Pill */}
+      <div className="absolute top-2 right-2 z-20 hidden sm:flex items-center gap-1.5 bg-white/90 backdrop-blur-md px-2.5 py-1 border border-zinc-200 text-[10px] font-mono text-zinc-500 uppercase tracking-widest pointer-events-none">
+        <span>{currentFrame.label}</span>
+      </div>
+
+      {/* Main Photorealistic Sneaker Canvas with 3D Parallax Tilt */}
+      <div
+        className="relative w-full h-[340px] sm:h-[420px] lg:h-[450px] flex items-center justify-center transition-transform duration-150 ease-out"
+        style={{
+          transform: isHovering
+            ? `rotateY(${tilt.x}deg) rotateX(${tilt.y}deg) scale(1.02)`
+            : 'rotateY(0deg) rotateX(0deg) scale(1)',
+          transformStyle: 'preserve-3d',
+        }}
+      >
+        {/* Sneaker Image Frame */}
+        <div className="relative w-full h-full max-h-[400px]">
+          <Image
+            src={currentFrame.src}
+            alt={`${activeColorway.name} — ${currentFrame.label}`}
+            fill
+            className="object-contain object-center drop-shadow-2xl transition-all duration-300"
+            priority
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+        </div>
+
+        {/* Realistic Ambient Ground Shadow that responds to tilt */}
+        <div
+          className="absolute -bottom-2 w-[70%] h-10 bg-zinc-950/20 rounded-full blur-2xl pointer-events-none transition-all duration-200"
+          style={{
+            transform: `translate(${tilt.x * -0.5}px, ${tilt.y * -0.5}px) scale(${
+              isHovering ? 1.08 : 1
+            })`,
+          }}
+        />
+
+        {/* Interactive Craftsmanship Hotspot Pins */}
+        {showHotspots && (
+          <div className="absolute inset-0 pointer-events-auto">
+            {HOTSPOTS.map((spot) => (
+              <div
+                key={spot.id}
+                style={{ top: spot.top, left: spot.left }}
+                className="absolute -translate-x-1/2 -translate-y-1/2 z-30"
+              >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveHotspot(activeHotspot === spot.id ? null : spot.id);
+                  }}
+                  className="relative group p-2"
+                  aria-label={`View spec: ${spot.title}`}
+                >
+                  <span className="h-4 w-4 rounded-full bg-zinc-950 text-white flex items-center justify-center ring-4 ring-white/90 shadow-md">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  </span>
+                </button>
+
+                {/* Hotspot Popover Tooltip */}
+                {activeHotspot === spot.id && (
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-white border border-zinc-950 shadow-xl z-40 text-left animate-in fade-in zoom-in-95 duration-150">
+                    <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400 uppercase tracking-widest mb-1">
+                      <span>ATELIER SPEC</span>
+                      <Check className="h-3 w-3 text-emerald-600" />
+                    </div>
+                    <p className="text-xs font-bold text-zinc-950 uppercase tracking-tight">
+                      {spot.title}
+                    </p>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed font-sans">
+                      {spot.desc}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Interactive Atelier Controls Bar */}
+      <div
+        className="w-full mt-3 z-20 flex flex-wrap items-center justify-between gap-3 bg-white/95 backdrop-blur-md p-3 border border-zinc-200 text-xs font-mono"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Colorway Selection */}
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] text-zinc-400 uppercase tracking-widest hidden sm:inline mr-1">
             COLORWAY:
@@ -450,38 +358,54 @@ export function Sneaker3DViewer({
           {COLORWAYS.map((cw, idx) => (
             <button
               key={cw.name}
-              onClick={() => updateColors(idx)}
-              className={`px-2 py-1 text-[10px] uppercase tracking-wider border transition-all ${
+              onClick={() => {
+                setSelectedColorway(idx);
+                setCurrentFrameIndex(0);
+              }}
+              className={`px-2.5 py-1 text-[10px] uppercase tracking-wider border transition-all ${
                 selectedColorway === idx
-                  ? 'bg-zinc-950 text-white border-zinc-950 font-bold'
-                  : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400'
+                  ? 'bg-zinc-950 text-white border-zinc-950 font-bold shadow-xs'
+                  : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400 hover:text-zinc-950'
               }`}
-              title={`Switch to ${cw.name}`}
+              title={`Switch to ${cw.colorwayLabel}`}
             >
               {cw.name}
             </button>
           ))}
         </div>
 
-        {/* View Controls */}
+        {/* View Controls: Auto-spin, Hotspots, Reset */}
         <div className="flex items-center gap-1.5 ml-auto">
           <button
-            onClick={() => setIsRotating((prev) => !prev)}
+            onClick={() => setShowHotspots((prev) => !prev)}
             className={`flex items-center gap-1 px-2.5 py-1 text-[10px] uppercase tracking-wider border transition-colors ${
-              isRotating
+              showHotspots
                 ? 'bg-zinc-950 text-white border-zinc-950 font-bold'
                 : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400'
             }`}
-            title="Toggle 360 Auto-Rotation"
+            title="Toggle Atelier Material Hotspots"
           >
-            <RotateCw className={`h-3 w-3 ${isRotating ? 'animate-spin' : ''}`} />
-            <span>AUTO-SPIN</span>
+            <Info className="h-3 w-3" />
+            <span className="hidden sm:inline">HOTSPOTS</span>
           </button>
 
           <button
-            onClick={resetView}
+            onClick={() => setIsAutoSpinning((prev) => !prev)}
+            className={`flex items-center gap-1 px-2.5 py-1 text-[10px] uppercase tracking-wider border transition-colors ${
+              isAutoSpinning
+                ? 'bg-zinc-950 text-white border-zinc-950 font-bold'
+                : 'bg-white text-zinc-600 border-zinc-200 hover:border-zinc-400'
+            }`}
+            title="Toggle 360 Turntable Auto-Spin"
+          >
+            <RotateCw className={`h-3 w-3 ${isAutoSpinning ? 'animate-spin' : ''}`} />
+            <span>360° SPIN</span>
+          </button>
+
+          <button
+            onClick={resetAngle}
             className="p-1.5 bg-white border border-zinc-200 text-zinc-600 hover:text-zinc-950 hover:border-zinc-400 transition-colors"
-            title="Reset Camera Angle"
+            title="Reset to 000° Lateral View"
           >
             <RefreshCw className="h-3 w-3" />
           </button>

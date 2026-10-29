@@ -1,15 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight, Box, Image as ImageIcon } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Sneaker3DViewer } from '@/components/3d/Sneaker3DViewer';
 import { formatPrice } from '@/lib/utils';
 
 export function HeroSection() {
-  const [viewMode, setViewMode] = useState<'3d' | 'photo'>('3d');
-
   return (
     <section className="relative bg-white pt-32 pb-16 lg:pt-38 lg:pb-24 border-b border-zinc-200/80 overflow-hidden">
       {/* Subtle architectural ambient backdrop */}
@@ -75,63 +71,11 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right Column: Organic Floating Sneaker (NO rigid boxed grid) */}
+          {/* Right Column: Photorealistic 360° Sneaker Experience */}
           <div className="lg:col-span-6 relative flex flex-col items-center justify-center">
-            {/* View Mode Switcher Pills (3D vs Studio Photo) */}
-            <div className="flex items-center gap-2 mb-4 bg-zinc-100 p-1 border border-zinc-200 text-[10px] font-mono tracking-widest uppercase z-20">
-              <button
-                onClick={() => setViewMode('3d')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 transition-all ${
-                  viewMode === '3d'
-                    ? 'bg-zinc-950 text-white font-bold shadow-xs'
-                    : 'text-zinc-600 hover:text-zinc-950'
-                }`}
-              >
-                <Box className="h-3 w-3" />
-                <span>3D INTERACTIVE [360°]</span>
-              </button>
-
-              <button
-                onClick={() => setViewMode('photo')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 transition-all ${
-                  viewMode === 'photo'
-                    ? 'bg-zinc-950 text-white font-bold shadow-xs'
-                    : 'text-zinc-600 hover:text-zinc-950'
-                }`}
-              >
-                <ImageIcon className="h-3 w-3" />
-                <span>STUDIO SHOT</span>
-              </button>
-            </div>
-
-            {/* Seamless Sneaker Stage Container without grid borders */}
-            <div className="relative w-full aspect-4/3 sm:aspect-square flex items-center justify-center">
-              {viewMode === '3d' ? (
-                /* Interactive Three.js 3D Sneaker Canvas */
-                <div className="w-full h-full flex items-center justify-center">
-                  <Sneaker3DViewer autoRotate shoeName="Court One Luxury" />
-                </div>
-              ) : (
-                /* Clean Floating Studio Photo without rigid grid frame */
-                <Link
-                  href="/sneakers/court-one"
-                  className="group relative w-full h-full flex flex-col items-center justify-center"
-                >
-                  <div className="relative w-full h-[320px] sm:h-[400px] transition-transform duration-700 ease-out group-hover:scale-105 group-hover:-translate-y-2">
-                    <Image
-                      src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1200&q=85"
-                      alt="Court One Luxury Edition"
-                      fill
-                      className="object-contain object-center drop-shadow-2xl"
-                      priority
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                    />
-                  </div>
-
-                  {/* Soft Realistic Contact Shadow */}
-                  <div className="w-3/4 h-8 bg-zinc-950/15 rounded-full blur-xl -mt-6 pointer-events-none" />
-                </Link>
-              )}
+            {/* Seamless 360 Turntable & Tilt Container */}
+            <div className="w-full">
+              <Sneaker3DViewer autoRotate />
             </div>
 
             {/* Floating Silhouette Tag & Price in Rupees (₹) */}
