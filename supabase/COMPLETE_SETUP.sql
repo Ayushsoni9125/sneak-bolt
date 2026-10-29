@@ -66,10 +66,36 @@ create table if not exists public.waitlist (
 create index if not exists waitlist_product_id_idx on public.waitlist(product_id);
 create index if not exists waitlist_normalized_email_idx on public.waitlist(normalized_email);
 
--- 5. Row Level Security (RLS)
+-- 5. Orders table (Acquisition Ledger)
+create table if not exists public.orders (
+  id               text primary key,
+  order_number     text not null unique,
+  user_id          uuid references auth.users(id) on delete set null,
+  user_email       text,
+  items            jsonb not null default '[]'::jsonb,
+  total_amount     numeric(10,2) not null check (total_amount >= 0),
+  status           text not null default 'confirmed' check (status in ('confirmed', 'preparing_dispatch', 'in_transit', 'delivered')),
+  shipping_address jsonb,
+  created_at       timestamptz not null default now()
+);
+
+create index if not exists orders_user_id_idx on public.orders(user_id);
+create index if not exists orders_order_number_idx on public.orders(order_number);
+
+-- 6. Row Level Security (RLS)
 alter table public.profiles enable row level security;
 alter table public.products enable row level security;
 alter table public.waitlist enable row level security;
+alter table public.orders   enable row level security;
+
+-- Orders policies
+drop policy if exists "Users can view their own orders" on public.orders;
+create policy "Users can view their own orders" on public.orders for select using (
+  auth.uid() = user_id or auth.uid() is null
+);
+
+drop policy if exists "Users can create orders" on public.orders;
+create policy "Users can create orders" on public.orders for insert with check (true);
 
 -- Profiles policies
 drop policy if exists "Profiles are viewable by everyone" on public.profiles;

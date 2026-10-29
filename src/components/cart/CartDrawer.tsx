@@ -7,11 +7,15 @@ import { X, Plus, Minus, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-re
 import { useCart } from '@/context/CartContext';
 import { formatPrice } from '@/lib/utils';
 
+import { createOrder } from '@/features/orders/actions';
+import type { Order } from '@/types';
+
 export function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, subtotal, totalCount, clearCart } =
     useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
+  const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
 
   // Close on Escape key
   useEffect(() => {
@@ -41,16 +45,37 @@ export function CartDrawer() {
   const handleClose = () => {
     setIsCheckingOut(false);
     setOrderComplete(false);
+    setConfirmedOrder(null);
     closeCart();
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    if (items.length === 0) return;
     setIsCheckingOut(true);
-    setTimeout(() => {
+    try {
+      const res = await createOrder({
+        items: items.map((i) => ({
+          id: i.id,
+          name: i.name,
+          slug: i.slug,
+          price: i.price,
+          image_url: i.image_url,
+          size: i.size,
+          quantity: i.quantity,
+        })),
+        total_amount: subtotal,
+      });
+
+      if (res.success && res.order) {
+        setConfirmedOrder(res.order);
+        setOrderComplete(true);
+        clearCart();
+      }
+    } catch {
+      // fallback
+    } finally {
       setIsCheckingOut(false);
-      setOrderComplete(true);
-      clearCart();
-    }, 1200);
+    }
   };
 
   return (
@@ -101,25 +126,40 @@ export function CartDrawer() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {orderComplete ? (
-            <div className="py-16 text-center space-y-4">
+            <div className="py-12 text-center space-y-4">
               <div className="h-12 w-12 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
-              <p className="text-[11px] font-mono tracking-[0.2em] text-zinc-400 uppercase">
+              <p className="text-[11px] font-mono tracking-[0.2em] text-emerald-700 uppercase font-bold">
                 ORDER CONFIRMED
               </p>
+              {confirmedOrder && (
+                <div className="p-3 bg-zinc-50 border border-zinc-200 text-xs font-mono">
+                  <span className="text-zinc-500">REFERENCE: </span>
+                  <span className="font-bold text-zinc-950">{confirmedOrder.order_number}</span>
+                </div>
+              )}
               <h3 className="text-xl font-bold text-zinc-950 tracking-tight">
                 Vault Allocation Reserved
               </h3>
               <p className="text-xs text-zinc-500 max-w-xs mx-auto leading-relaxed">
                 Your order receipt and serial certificate have been queued. Authenticity dispatch occurs within 24 hours via DHL Express.
               </p>
-              <button
-                onClick={handleClose}
-                className="mt-4 px-6 py-3 bg-zinc-950 text-white text-xs font-mono tracking-[0.2em] uppercase hover:bg-zinc-800 transition-colors"
-              >
-                RETURN TO VAULT
-              </button>
+              <div className="pt-2 flex flex-col gap-2.5">
+                <Link
+                  href="/account"
+                  onClick={handleClose}
+                  className="w-full py-3 bg-zinc-950 text-white text-xs font-mono tracking-[0.18em] uppercase hover:bg-zinc-800 transition-colors text-center"
+                >
+                  VIEW IN ORDER HISTORY →
+                </Link>
+                <button
+                  onClick={handleClose}
+                  className="w-full py-2.5 border border-zinc-200 text-zinc-700 text-xs font-mono tracking-[0.18em] uppercase hover:border-zinc-950 hover:text-zinc-950 transition-colors"
+                >
+                  CONTINUE BROWSING
+                </button>
+              </div>
             </div>
           ) : items.length === 0 ? (
             <div className="py-20 text-center space-y-4">
