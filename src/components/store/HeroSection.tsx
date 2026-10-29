@@ -1,119 +1,61 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
-interface ShowcaseSneaker {
+interface SneakerView {
   id: string;
-  slug: string;
-  name: string;
-  edition: string;
-  price: number;
-  tag: string;
+  label: string;
+  viewName: string;
   image: string;
-  hoverImage?: string;
-  spec: string;
+  alt: string;
 }
 
-const SHOWCASE_SNEAKERS: ShowcaseSneaker[] = [
+const COURT_ONE_VIEWS: SneakerView[] = [
   {
-    id: 'court-one',
-    slug: 'court-one',
-    name: 'Court One Luxury',
-    edition: 'Chalk White // Tuscan Calfskin',
-    price: 28999,
-    tag: 'LIMITED TO 500 PAIRS',
+    id: 'hero',
+    label: 'PERSPECTIVE 01',
+    viewName: 'DUAL FLOATING ARCHITECTURE',
     image: '/images/court-one-hero.jpg',
-    hoverImage: '/images/court-one-quarter.jpg',
-    spec: 'HANDMADE IN CIVITANOVA MARCHE',
+    alt: 'Court One Luxury Minimalist Court Sneaker - Floating Pair View',
   },
   {
-    id: 'shadow-high',
-    slug: 'shadow-high',
-    name: 'Shadow High Archive',
-    edition: 'Triple Pitch Black // Oiled Nubuck',
-    price: 34999,
-    tag: 'ARCHIVAL RE-ISSUE',
-    image: '/images/shadow-high.jpg',
-    hoverImage: '/images/court-one-profile.jpg',
-    spec: 'CARBON FIBRE TORSION CHASSIS',
+    id: 'quarter',
+    label: 'PERSPECTIVE 02',
+    viewName: 'DYNAMIC 45° STUDIO ANGLE',
+    image: '/images/court-one-quarter.jpg',
+    alt: 'Court One Luxury - Dynamic Quarter Studio View',
   },
   {
-    id: 'obsidian-low',
-    slug: 'obsidian-low',
-    name: 'Obsidian Low Prime',
-    edition: 'Obsidian Navy // Honey Gum',
-    price: 26000,
-    tag: 'FRENCH CALFSKIN',
-    image: '/images/obsidian-low.jpg',
-    spec: 'NATURAL VULCANIZED GUM SOLE',
-  },
-  {
-    id: 'meridian-runner',
-    slug: 'meridian-runner',
-    name: 'Meridian Sculpt Runner',
-    edition: 'Glacier Grey // Spacer Mesh',
-    price: 32000,
-    tag: 'DUAL-DENSITY CHASSIS',
-    image: '/images/meridian-runner.jpg',
-    spec: 'OPEN-CELL SPACER MESH',
-  },
-  {
-    id: 'velocity',
-    slug: 'velocity',
-    name: 'Velocity Neo Racer',
-    edition: 'Volt Citron // Mono-Weave Knit',
-    price: 24500,
-    tag: 'SUPERCRITICAL FOAM',
-    image: '/images/velocity.jpg',
-    spec: 'KINETIC PROPULSION RACER',
-  },
-  {
-    id: 'komorebi-luxe',
-    slug: 'komorebi-luxe',
-    name: 'Komorebi Luxe',
-    edition: 'Raw Suede // Natural Latex',
-    price: 29500,
-    tag: 'HAND-CRAFTED MARGOM',
-    image: '/images/komorebi-luxe.jpg',
-    spec: 'JAPANESE MINIMALIST GEOMETRY',
+    id: 'profile',
+    label: 'PERSPECTIVE 03',
+    viewName: 'LATERAL PROFILE SILHOUETTE',
+    image: '/images/court-one-profile.jpg',
+    alt: 'Court One Luxury - Lateral Profile View',
   },
 ];
 
 export function HeroSection() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
+  const [activeViewIndex, setActiveViewIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const currentSneaker = SHOWCASE_SNEAKERS[currentIndex];
-
-  const nextSneaker = useCallback(() => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % SHOWCASE_SNEAKERS.length);
-      setIsTransitioning(false);
-    }, 250);
-  }, []);
-
-  const prevSneaker = useCallback(() => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentIndex((prev) => (prev - 1 + SHOWCASE_SNEAKERS.length) % SHOWCASE_SNEAKERS.length);
-      setIsTransitioning(false);
-    }, 250);
-  }, []);
-
-  // Continuous auto-rotation every 4 seconds (pauses on hover)
+  // Automatically cycles sneaker images by themselves every 3 seconds
   useEffect(() => {
-    if (isHovered) return;
     const timer = setInterval(() => {
-      nextSneaker();
-    }, 4000);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setActiveViewIndex((prev) => (prev + 1) % COURT_ONE_VIEWS.length);
+        setIsTransitioning(false);
+      }, 300);
+    }, 3000);
+
     return () => clearInterval(timer);
-  }, [isHovered, nextSneaker]);
+  }, []);
+
+  const currentView = COURT_ONE_VIEWS[activeViewIndex];
 
   return (
     <section className="relative bg-white pt-28 pb-12 sm:pt-36 sm:pb-16 lg:pt-40 lg:pb-24 border-b border-zinc-200/80 overflow-hidden">
@@ -180,48 +122,40 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Right Column: Heroic Floating Sneaker — Continuous 1-by-1 Presentation (Zero Grid) */}
-          <div
-            className="lg:col-span-6 relative flex flex-col items-center justify-center order-1 lg:order-2"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            {/* Upper Badge & Rotation Status Bar */}
-            <div className="w-full max-w-md flex items-center justify-between mb-2 px-3 text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+          {/* Right Column: Heroic Floating Sneaker with Self-Changing Multiple Images (Zero Grid) */}
+          <div className="lg:col-span-6 relative flex flex-col items-center justify-center order-1 lg:order-2">
+            {/* Upper Perspective Live Indicator */}
+            <div className="w-full max-w-md flex items-center justify-between mb-2 px-2 text-[10px] font-mono uppercase tracking-widest text-zinc-400">
               <div className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-zinc-950 font-bold">
-                  {`SILHOUETTE 0${currentIndex + 1} // 0${SHOWCASE_SNEAKERS.length}`}
+                  {`${currentView.label} // 0${COURT_ONE_VIEWS.length}`}
                 </span>
               </div>
-              <span className="text-zinc-400 text-[9px] hidden sm:inline">
-                {currentSneaker.tag}
+              <span className="text-zinc-400 text-[9px] tracking-wider">
+                {currentView.viewName}
               </span>
             </div>
 
             {/* Floating Sneaker Showcase Viewport */}
             <div className="relative w-full max-w-lg">
               <Link
-                href={`/sneakers/${currentSneaker.slug}`}
+                href="/sneakers/court-one"
                 className="group relative w-full flex flex-col items-center justify-center cursor-pointer select-none"
-                aria-label={`View ${currentSneaker.name}`}
+                aria-label="View Court One Luxury"
               >
-                {/* Floating Sneaker Image with Crossfade */}
+                {/* Floating Sneaker Image Container with Smooth Crossfade */}
                 <div className="relative w-full h-[280px] sm:h-[390px] lg:h-[460px] flex items-center justify-center">
                   <div
                     className={`relative w-full h-full flex items-center justify-center transition-all duration-700 ease-out ${
-                      isTransitioning ? 'opacity-0 scale-95 -translate-y-2' : 'opacity-100 scale-100 translate-y-0'
-                    } group-hover:scale-105 group-hover:-translate-y-3`}
+                      isTransitioning ? 'opacity-0 scale-95 -translate-y-1' : 'opacity-100 scale-100 translate-y-0'
+                    } group-hover:scale-105 group-hover:-translate-y-2`}
                   >
                     <Image
-                      src={
-                        isHovered && currentSneaker.hoverImage
-                          ? currentSneaker.hoverImage
-                          : currentSneaker.image
-                      }
-                      alt={currentSneaker.name}
+                      src={currentView.image}
+                      alt={currentView.alt}
                       fill
-                      className="object-contain object-center transition-all duration-500"
+                      className="object-contain object-center transition-opacity duration-500"
                       priority
                       sizes="(max-width: 1024px) 100vw, 50vw"
                     />
@@ -231,77 +165,48 @@ export function HeroSection() {
                 {/* Natural Soft Ground Contact Shadow */}
                 <div
                   className={`w-3/4 h-6 sm:h-8 bg-zinc-900/10 rounded-full blur-xl -mt-2 sm:-mt-4 transition-all duration-700 ${
-                    isTransitioning ? 'opacity-20 scale-75' : 'opacity-60 scale-100'
+                    isTransitioning ? 'opacity-30 scale-90' : 'opacity-60 scale-100'
                   } group-hover:scale-95 group-hover:opacity-40`}
                 />
 
-                {/* Minimalist Product Identifier Below */}
-                <div className="mt-4 sm:mt-5 flex items-center justify-between w-full max-w-md px-3 text-xs font-mono">
+                {/* Clean Minimalist Product Identifier Below */}
+                <div className="mt-4 sm:mt-5 flex items-center justify-between w-full max-w-md px-2 text-xs font-mono">
                   <div className="flex items-center gap-2 text-zinc-950 group-hover:text-zinc-600 transition-colors">
                     <span className="font-bold uppercase tracking-wider text-[11px] sm:text-xs">
-                      {currentSneaker.name}
+                      COURT ONE LUXURY
                     </span>
                     <span className="text-[10px] text-zinc-400 uppercase tracking-widest hidden sm:inline">
-                      {'//'} {currentSneaker.edition.split('//')[0]?.trim()}
+                      {'//'} CHALK LEATHER
                     </span>
                     <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                   </div>
 
                   <div className="flex items-baseline gap-1 font-bold text-zinc-950">
-                    <span className="text-xs sm:text-sm font-mono">
-                      {formatPrice(currentSneaker.price)}
-                    </span>
+                    <span className="text-xs sm:text-sm font-mono">{formatPrice(28999)}</span>
                     <span className="text-[9px] text-zinc-400 font-normal uppercase tracking-wider">
                       INR
                     </span>
                   </div>
                 </div>
               </Link>
-
-              {/* Prev / Next Interactive Touch Targets on Sides */}
-              <button
-                type="button"
-                onClick={prevSneaker}
-                aria-label="Previous silhouette"
-                className="absolute left-0 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-zinc-950 hover:text-white border border-zinc-200 text-zinc-700 rounded-full shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-110 cursor-pointer -ml-2 sm:-ml-4 z-10"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-
-              <button
-                type="button"
-                onClick={nextSneaker}
-                aria-label="Next silhouette"
-                className="absolute right-0 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-zinc-950 hover:text-white border border-zinc-200 text-zinc-700 rounded-full shadow-sm backdrop-blur-sm transition-all duration-200 hover:scale-110 cursor-pointer -mr-2 sm:-mr-4 z-10"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
             </div>
 
-            {/* Continuous Architectural Progress Strip */}
-            <div className="w-full max-w-md px-3 mt-4 flex items-center gap-1.5">
-              {SHOWCASE_SNEAKERS.map((item, idx) => (
-                <button
+            {/* Continuous Self-Changing Minimal Indicator Lines */}
+            <div className="w-full max-w-md px-2 mt-4 flex items-center gap-2">
+              {COURT_ONE_VIEWS.map((item, idx) => (
+                <div
                   key={item.id}
-                  type="button"
-                  onClick={() => {
-                    setIsTransitioning(true);
-                    setTimeout(() => {
-                      setCurrentIndex(idx);
-                      setIsTransitioning(false);
-                    }, 200);
-                  }}
-                  className="flex-1 group py-2 flex flex-col cursor-pointer"
-                  aria-label={`Jump to ${item.name}`}
+                  className="flex-1 py-1 flex flex-col"
+                  aria-label={item.viewName}
                 >
-                  <div className="h-1 w-full bg-zinc-200 rounded-full overflow-hidden transition-colors group-hover:bg-zinc-300">
+                  <div className="h-1 w-full bg-zinc-200 rounded-full overflow-hidden">
                     <div
                       className={`h-full bg-zinc-950 transition-all duration-500 rounded-full ${
-                        idx === currentIndex ? 'w-full' : 'w-0'
+                        idx === activeViewIndex ? 'w-full' : 'w-0'
                       }`}
                     />
                   </div>
-                </button>
+                </div>
               ))}
             </div>
           </div>
