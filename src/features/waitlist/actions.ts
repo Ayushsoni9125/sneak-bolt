@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { isAdmin } from '@/features/auth/actions';
 import { waitlistSchema, normalizeEmail } from '@/lib/validations';
 import { FALLBACK_PRODUCTS } from '@/data/seed-products';
+import { addLocalWaitlistEntry, getLocalWaitlistEntries } from '@/lib/server-store';
 
 export async function joinWaitlist(formData: FormData) {
   const rawData = {
@@ -20,11 +21,10 @@ export async function joinWaitlist(formData: FormData) {
   const { email, product_id } = result.data;
   const normalized = normalizeEmail(email);
 
-  const supabase = await createClient();
-
   // Verify product exists (DB or fallback catalog)
   let productName = '';
   try {
+    const supabase = await createClient();
     const { data: product } = await supabase
       .from('products')
       .select('id, name')
@@ -43,25 +43,30 @@ export async function joinWaitlist(formData: FormData) {
     productName = fallback.name;
   }
 
-  // Insert — unique constraint handles duplicate prevention at DB level
-  const { error } = await supabase.from('waitlist').insert({
+  // Save to persistent server store
+  const localResult = addLocalWaitlistEntry({
     product_id,
     email,
     normalized_email: normalized,
   });
 
-  if (error) {
-    if (error.code === '23505') {
-      return {
-        error: `You're already on the waitlist for ${productName}.`,
-        alreadyRegistered: true,
-      };
-    }
-    // If table doesn't exist yet in Supabase (PGRST205), succeed for showcase preview
-    if (error.code === 'PGRST205') {
-      return { success: `You've been added to the waitlist for ${productName}!` };
-    }
-    return { error: 'Failed to join waitlist. Please try again.' };
+  if (localResult.alreadyRegistered) {
+    return {
+      error: `You're already on the waitlist for ${productName}.`,
+      alreadyRegistered: true,
+    };
+  }
+
+  // Attempt DB insert in background
+  try {
+    const supabase = await createClient();
+    await supabase.from('waitlist').insert({
+      product_id,
+      email,
+      normalized_email: normalized,
+    });
+  } catch {
+    // Local store already succeeded
   }
 
   return { success: `You've been added to the waitlist for ${productName}!` };
@@ -72,18 +77,26 @@ export async function getWaitlistEntries() {
     return { error: 'Unauthorized', data: null };
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('waitlist')
-    .select(`
-      id,
-      email,
-      normalized_email,
-      created_at,
-      product:products(id, name, slug)
-    `)
-    .order('created_at', { ascending: false });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('waitlist')
+      .select(`
+        id,
+        email,
+        normalized_email,
+        created_at,
+        product:products(id, name, slug)
+      `)
+      .order('created_at', { ascending: false });
 
-  if (error) return { error: 'Failed to load waitlist.', data: null };
-  return { data, error: null };
+    if (!error && data && data.length > 0) {
+      return { data, error: null };
+    }
+  } catch {
+    // fallback to resilient local store
+  }
+
+  const localEntries = getLocalWaitlistEntries();
+  return { data: localEntries, error: null };
 }

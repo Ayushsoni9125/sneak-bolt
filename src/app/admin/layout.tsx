@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getUserProfile } from '@/features/auth/actions';
 import { logout } from '@/features/auth/actions';
-import { LayoutDashboard, Package, Users, LogOut, Store } from 'lucide-react';
+import { LayoutDashboard, Package, Users, LogOut, Store, ShoppingBag } from 'lucide-react';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const profile = await getUserProfile();
@@ -22,6 +22,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <nav className="flex-1 px-4 py-6 space-y-1" aria-label="Admin navigation">
           {[
             { href: '/admin', label: 'Overview', icon: LayoutDashboard },
+            { href: '/admin/orders', label: 'Orders', icon: ShoppingBag },
             { href: '/admin/products', label: 'Products', icon: Package },
             { href: '/admin/waitlist', label: 'Waitlist', icon: Users },
           ].map(({ href, label, icon: Icon }) => (
