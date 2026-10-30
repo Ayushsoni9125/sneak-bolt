@@ -20,7 +20,7 @@ export function WaitlistCTA({ products }: WaitlistCTAProps) {
         <div className="bg-white border border-zinc-200 p-8 sm:p-12 lg:p-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
             <div className="lg:col-span-6">
-              <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase mb-3">
+              <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-600 uppercase mb-3">
                 <span>EXCLUSIVE ACCESS</span>
                 <span>{'//'}</span>
                 <span>SERIAL ALLOCATIONS</span>
@@ -34,7 +34,7 @@ export function WaitlistCTA({ products }: WaitlistCTAProps) {
                 Each silhouette edition is capped at 500 numbered units worldwide. Receive encrypted private allocation links 15 minutes before public drop windows.
               </p>
 
-              <div className="flex items-center gap-6 text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+              <div className="flex items-center gap-6 text-[11px] font-mono text-zinc-600 uppercase tracking-wider">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-zinc-900" />
                   <span>PRIVATE LEDGER ONLY</span>
@@ -44,7 +44,7 @@ export function WaitlistCTA({ products }: WaitlistCTAProps) {
             </div>
 
             <div className="lg:col-span-6 bg-zinc-50 border border-zinc-200 p-6 sm:p-8">
-              <p className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase mb-1">
+              <p className="text-[10px] font-mono tracking-widest text-zinc-600 uppercase mb-1">
                 CURRENT ALLOCATION TARGET
               </p>
               <h3 className="text-base sm:text-lg font-black uppercase text-zinc-950 tracking-tight mb-4">

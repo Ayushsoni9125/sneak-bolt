@@ -18,7 +18,7 @@ export function UpcomingDrops({ products }: UpcomingDropsProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 border-b border-zinc-200 pb-6">
           <div>
-            <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase mb-2">
+            <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-600 uppercase mb-2">
               <span>INDEX 02</span>
               <span>{'//'}</span>
               <span>CALENDAR & PRE-REGISTRATION</span>
@@ -26,7 +26,7 @@ export function UpcomingDrops({ products }: UpcomingDropsProps) {
             <h2 className="text-2xl sm:text-4xl font-black text-zinc-950 uppercase tracking-tight">
               UPCOMING RELEASES
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-500 mt-2 max-w-md font-sans">
+            <p className="text-xs sm:text-sm text-zinc-600 mt-2 max-w-md font-sans">
               Limited to 250 - 500 numbered pairs worldwide. Pre-register for priority private checkout windows.
             </p>
           </div>
@@ -67,7 +67,7 @@ export function UpcomingDrops({ products }: UpcomingDropsProps) {
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <AvailabilityBadge availability={product.availability} />
-                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
+                    <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
                       {product.sku || 'PRE-DROP'}
                     </span>
                   </div>
@@ -77,12 +77,12 @@ export function UpcomingDrops({ products }: UpcomingDropsProps) {
                   </h3>
 
                   {product.colorway && (
-                    <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest mt-1">
+                    <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mt-1">
                       {product.colorway}
                     </p>
                   )}
 
-                  <p className="text-xs text-zinc-500 line-clamp-2 mt-2 font-sans">
+                  <p className="text-xs text-zinc-600 line-clamp-2 mt-2 font-sans">
                     {product.description}
                   </p>
                 </div>

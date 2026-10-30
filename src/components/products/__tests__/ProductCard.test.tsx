@@ -36,7 +36,7 @@ describe('ProductCard', () => {
   it('links to the correct product detail page slug', () => {
     render(<ProductCard product={mockProduct} />);
 
-    const link = screen.getByRole('link', { name: /view court one/i });
+    const link = screen.getByRole('link', { name: /court one/i });
     expect(link).toHaveAttribute('href', '/sneakers/court-one');
   });
 
@@ -49,7 +49,7 @@ describe('ProductCard', () => {
   it('renders Add to Cart button and updates state when clicked by authenticated user', () => {
     render(<ProductCard product={mockProduct} />);
 
-    const addToCartBtn = screen.getByRole('button', { name: /add court one to cart/i });
+    const addToCartBtn = screen.getByRole('button', { name: /add to cart/i });
     expect(addToCartBtn).toBeInTheDocument();
     expect(addToCartBtn).toHaveTextContent(/add to cart/i);
 
@@ -66,7 +66,7 @@ describe('ProductCard', () => {
       </CartProvider>
     );
 
-    const addToCartBtn = screen.getByRole('button', { name: /add court one to cart/i });
+    const addToCartBtn = screen.getByRole('button', { name: /add to cart/i });
     fireEvent.click(addToCartBtn);
 
     // Should redirect to login with the redirectTo path encoded

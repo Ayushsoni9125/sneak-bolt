@@ -9,7 +9,7 @@ export function CampaignBanner() {
         {/* Campaign Header */}
         <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-zinc-200 pb-6">
           <div>
-            <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase mb-2">
+            <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-600 uppercase mb-2">
               <span>EDITORIAL</span>
               <span>{'//'}</span>
               <span>PROVENANCE & ARCHITECTURE</span>
@@ -22,7 +22,7 @@ export function CampaignBanner() {
             </p>
           </div>
 
-          <div className="text-[11px] font-mono tracking-widest uppercase text-zinc-500">
+          <div className="text-[11px] font-mono tracking-widest uppercase text-zinc-600">
             FLORENCE • OKAYAMA • CIVITANOVA
           </div>
         </div>
@@ -31,7 +31,7 @@ export function CampaignBanner() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Main Hero Lookbook */}
           <div className="lg:col-span-7 bg-white border border-zinc-200 group flex flex-col justify-between">
-            <div className="p-4 border-b border-zinc-100 flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
+            <div className="p-4 border-b border-zinc-100 flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-600 uppercase">
               <span>PROVENANCE STUDY 01</span>
               <span>TUSCAN OILED CALFSKIN</span>
             </div>
@@ -51,7 +51,7 @@ export function CampaignBanner() {
                 <h3 className="text-base font-black uppercase text-zinc-950 tracking-tight">
                   The Obsidian Low Prime
                 </h3>
-                <p className="text-xs text-zinc-500 mt-1 max-w-md font-sans">
+                <p className="text-xs text-zinc-600 mt-1 max-w-md font-sans">
                   Double-needle seam reinforcement over an artisan natural gum rubber cupsole.
                 </p>
               </div>
@@ -71,7 +71,7 @@ export function CampaignBanner() {
             {/* Story 1 */}
             <div className="bg-white border border-zinc-200 p-6 flex flex-col justify-between flex-1">
               <div>
-                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-400 uppercase mb-3">
+                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-600 uppercase mb-3">
                   <span>CRAFTSMANSHIP NOTE</span>
                   <span>MARGOM CUPSOLE</span>
                 </div>
@@ -83,7 +83,7 @@ export function CampaignBanner() {
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-zinc-100 text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+              <div className="mt-6 pt-4 border-t border-zinc-100 text-[10px] font-mono tracking-widest text-zinc-600 uppercase">
                 GUARANTEED RE-SOLEABLE LIFETIME SERVICE
               </div>
             </div>
@@ -91,7 +91,7 @@ export function CampaignBanner() {
             {/* Story 2 */}
             <div className="bg-white border border-zinc-200 p-6 flex flex-col justify-between flex-1">
               <div>
-                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-400 uppercase mb-3">
+                <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-600 uppercase mb-3">
                   <span>AUTHENTICITY LEDGER</span>
                   <span>ENCRYPTED NFC</span>
                 </div>
@@ -103,7 +103,7 @@ export function CampaignBanner() {
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-zinc-100 text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+              <div className="mt-6 pt-4 border-t border-zinc-100 text-[10px] font-mono tracking-widest text-zinc-600 uppercase">
                 ZERO REPLICAS TOLERANCE
               </div>
             </div>

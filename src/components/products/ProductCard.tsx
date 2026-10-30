@@ -56,7 +56,6 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
       <Link
         href={`/sneakers/${product.slug}`}
         className="block w-full focus:outline-none"
-        aria-label={`${product.name} - View ${product.name} sneaker details`}
       >
         {/* Clean Floating Sneaker Canvas */}
         <div className="relative aspect-4/3 w-full flex items-center justify-center p-2 sm:p-4">
@@ -98,7 +97,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             </p>
           )}
 
-          <div className="flex items-center justify-between mt-2 text-[10px] sm:text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
+          <div className="flex items-center justify-between mt-2 text-[10px] sm:text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
             <span className="truncate">{product.category || 'LUXURY SILHOUETTE'}</span>
             <span className="text-zinc-950 flex items-center gap-1 font-bold shrink-0 ml-2">
               <span>DETAILS</span>
@@ -119,7 +118,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
                 ? 'bg-emerald-600 text-white border-emerald-600 font-bold'
                 : 'bg-zinc-950 hover:bg-zinc-800 text-white border-zinc-950 shadow-xs'
             }`}
-            aria-label={`Add ${product.name} to cart`}
+            aria-label={
+              isAdded
+                ? `Added to cart: ${product.name}`
+                : `Add to cart: ${product.name}`
+            }
           >
             {isAdded ? (
               <>
@@ -142,7 +145,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
             <ArrowRight className="h-3 w-3" />
           </Link>
         ) : (
-          <div className="w-full py-2.5 px-3 bg-zinc-100 border border-zinc-200 text-zinc-400 text-xs font-mono uppercase tracking-[0.18em] flex items-center justify-center gap-2 text-center select-none">
+          <div className="w-full py-2.5 px-3 bg-zinc-100 border border-zinc-200 text-zinc-500 text-xs font-mono uppercase tracking-[0.18em] flex items-center justify-center gap-2 text-center select-none">
             <span>ARCHIVED</span>
           </div>
         )}

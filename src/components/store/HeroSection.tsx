@@ -204,7 +204,6 @@ export function HeroSection() {
               <Link
                 href={`/sneakers/${currentSneaker.slug}`}
                 className="group relative w-full flex flex-col items-center justify-center cursor-pointer select-none"
-                aria-label={`${currentSneaker.name} - View silhouette details`}
               >
                 {/* Floating Sneaker Image Container with Smooth Crossfade */}
                 <div className="relative w-full h-[240px] sm:h-[390px] lg:h-[460px] flex items-center justify-center">
@@ -241,7 +240,7 @@ export function HeroSection() {
                     <span className="font-bold uppercase tracking-wider text-[10px] sm:text-xs truncate">
                       {currentSneaker.name}
                     </span>
-                    <span className="text-[9px] sm:text-[10px] text-zinc-400 uppercase tracking-widest hidden sm:inline truncate max-w-[150px]">
+                    <span className="text-[9px] sm:text-[10px] text-zinc-500 uppercase tracking-widest hidden sm:inline truncate max-w-[150px]">
                       {`// ${currentSneaker.edition.split('//')[0]?.trim()}`}
                     </span>
                     <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1 shrink-0" />
@@ -251,7 +250,7 @@ export function HeroSection() {
                     <span className="text-xs sm:text-sm font-mono">
                       {formatPrice(currentSneaker.price)}
                     </span>
-                    <span className="text-[9px] text-zinc-400 font-normal uppercase tracking-wider">
+                    <span className="text-[9px] text-zinc-500 font-normal uppercase tracking-wider">
                       INR
                     </span>
                   </div>

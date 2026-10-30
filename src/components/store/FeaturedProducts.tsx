@@ -16,7 +16,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
       {/* Section Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 border-b border-zinc-200 pb-6">
         <div>
-          <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase mb-2">
+          <div className="flex items-center gap-2 text-[11px] font-mono tracking-[0.25em] text-zinc-600 uppercase mb-2">
             <span>INDEX 01</span>
             <span>{'//'}</span>
             <span>ACTIVE VAULT ALLOCATIONS</span>
@@ -24,7 +24,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
           <h2 className="text-2xl sm:text-4xl font-black text-zinc-950 uppercase tracking-tight">
             CURATED SILHOUETTES
           </h2>
-          <p className="text-xs sm:text-sm text-zinc-500 mt-2 max-w-lg font-sans">
+          <p className="text-xs sm:text-sm text-zinc-600 mt-2 max-w-lg font-sans">
             Serialized editions handcrafted from Italian calfskin, archival Japanese nubuck, and aerodynamic supercritical foams.
           </p>
         </div>
@@ -41,7 +41,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
 
       {/* Product Grid */}
       {featured.length === 0 ? (
-        <div className="text-center py-20 border border-zinc-200 text-xs font-mono uppercase tracking-widest text-zinc-400">
+        <div className="text-center py-20 border border-zinc-200 text-xs font-mono uppercase tracking-widest text-zinc-600">
           No silhouettes currently listed in vault.
         </div>
       ) : (
