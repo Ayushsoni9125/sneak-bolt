@@ -19,6 +19,16 @@ const navLinks = [
   { href: '/sneakers?filter=sold_out', label: 'ARCHIVE' },
 ];
 
+const TICKER_ITEMS = [
+  'COMPLIMENTARY WORLDWIDE EXPRESS DISPATCH',
+  'SERIALIZED HANDCRAFTED FOOTWEAR',
+  'COLLECTION 2026 // LIMITED PRODUCTION',
+  'CIVITANOVA MARCHE // MADE IN ITALY',
+  'AUTHENTICATED NFC ARCHIVAL HARDWARE',
+  '100% FULL-GRAIN TUSCAN CALFSKIN',
+  'LIMITED RUN OF 500 PAIRS WORLDWIDE',
+];
+
 export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -39,12 +49,27 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
 
   return (
     <>
-      {/* Top Luxury Announcement Ticker */}
-      <header className="fixed top-0 inset-x-0 z-40 bg-zinc-950 text-white text-[9px] sm:text-[10px] font-mono tracking-[0.15em] sm:tracking-[0.25em] uppercase h-[32px] px-3 sm:px-4 flex items-center justify-center border-b border-zinc-800">
-        <div className="flex items-center justify-center gap-3 sm:gap-6 overflow-hidden truncate">
-          <span className="truncate">COMPLIMENTARY WORLDWIDE EXPRESS DISPATCH</span>
-          <span className="hidden sm:inline text-zinc-600">•</span>
-          <span className="hidden sm:inline">SERIALIZED HANDCRAFTED FOOTWEAR</span>
+      {/* Top Luxury Announcement Ticker Marquee */}
+      <header className="fixed top-0 inset-x-0 z-40 bg-zinc-950 text-white text-[9px] sm:text-[10px] font-mono uppercase h-[32px] overflow-hidden flex items-center border-b border-zinc-800/80 select-none">
+        <div className="w-full overflow-hidden flex items-center">
+          <div className="animate-marquee">
+            <div className="flex items-center gap-6 sm:gap-10 shrink-0 pr-6 sm:pr-10">
+              {TICKER_ITEMS.concat(TICKER_ITEMS).map((item, idx) => (
+                <span key={`ticker-a-${idx}`} className="flex items-center gap-6 sm:gap-10 shrink-0">
+                  <span className="tracking-[0.2em] sm:tracking-[0.25em] font-medium whitespace-nowrap">{item}</span>
+                  <span className="text-zinc-600 select-none">•</span>
+                </span>
+              ))}
+            </div>
+            <div className="flex items-center gap-6 sm:gap-10 shrink-0 pr-6 sm:pr-10" aria-hidden="true">
+              {TICKER_ITEMS.concat(TICKER_ITEMS).map((item, idx) => (
+                <span key={`ticker-b-${idx}`} className="flex items-center gap-6 sm:gap-10 shrink-0">
+                  <span className="tracking-[0.2em] sm:tracking-[0.25em] font-medium whitespace-nowrap">{item}</span>
+                  <span className="text-zinc-600 select-none">•</span>
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </header>
 
