@@ -199,8 +199,10 @@
     animation: marquee 85s linear infinite;
     will-change: transform;
   }
-  .animate-marquee:hover {
-    animation-play-state: paused;
+  @media (hover: hover) {
+    .animate-marquee:hover {
+      animation-play-state: paused;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

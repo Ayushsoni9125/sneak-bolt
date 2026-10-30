@@ -51,20 +51,24 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
     <>
       {/* Top Luxury Announcement Ticker Marquee */}
       <header className="fixed top-0 inset-x-0 z-40 bg-zinc-950 text-white text-[9px] sm:text-[10px] font-mono uppercase h-[32px] overflow-hidden flex items-center border-b border-zinc-800/80 select-none">
+        {/* Soft edge gradient fades for seamless visual entrance/exit on all screens */}
+        <div className="pointer-events-none absolute left-0 inset-y-0 w-6 sm:w-16 bg-gradient-to-r from-zinc-950 to-transparent z-10" />
+        <div className="pointer-events-none absolute right-0 inset-y-0 w-6 sm:w-16 bg-gradient-to-l from-zinc-950 to-transparent z-10" />
+
         <div className="w-full overflow-hidden flex items-center">
           <div className="animate-marquee">
-            <div className="flex items-center gap-6 sm:gap-10 shrink-0 pr-6 sm:pr-10">
+            <div className="flex items-center gap-5 sm:gap-10 shrink-0 pr-5 sm:pr-10">
               {TICKER_ITEMS.concat(TICKER_ITEMS).map((item, idx) => (
-                <span key={`ticker-a-${idx}`} className="flex items-center gap-6 sm:gap-10 shrink-0">
-                  <span className="tracking-[0.2em] sm:tracking-[0.25em] font-medium whitespace-nowrap">{item}</span>
+                <span key={`ticker-a-${idx}`} className="flex items-center gap-5 sm:gap-10 shrink-0">
+                  <span className="tracking-[0.18em] sm:tracking-[0.25em] font-medium whitespace-nowrap">{item}</span>
                   <span className="text-zinc-600 select-none">•</span>
                 </span>
               ))}
             </div>
-            <div className="flex items-center gap-6 sm:gap-10 shrink-0 pr-6 sm:pr-10" aria-hidden="true">
+            <div className="flex items-center gap-5 sm:gap-10 shrink-0 pr-5 sm:pr-10" aria-hidden="true">
               {TICKER_ITEMS.concat(TICKER_ITEMS).map((item, idx) => (
-                <span key={`ticker-b-${idx}`} className="flex items-center gap-6 sm:gap-10 shrink-0">
-                  <span className="tracking-[0.2em] sm:tracking-[0.25em] font-medium whitespace-nowrap">{item}</span>
+                <span key={`ticker-b-${idx}`} className="flex items-center gap-5 sm:gap-10 shrink-0">
+                  <span className="tracking-[0.18em] sm:tracking-[0.25em] font-medium whitespace-nowrap">{item}</span>
                   <span className="text-zinc-600 select-none">•</span>
                 </span>
               ))}
