@@ -221,6 +221,8 @@ export function HeroSection() {
                       fill
                       className="object-contain object-center transition-opacity duration-500"
                       priority
+                      loading="eager"
+                      fetchPriority="high"
                       sizes="(max-width: 640px) 90vw, (max-width: 1024px) 70vw, 50vw"
                     />
                   </div>
@@ -258,21 +260,29 @@ export function HeroSection() {
             </div>
 
             {/* Continuous Hands-Free Progress Indicators for all silhouettes */}
-            <div className="w-full max-w-md px-2 mt-4 flex items-center gap-1.5">
+            <div
+              className="w-full max-w-md px-2 mt-4 flex items-center gap-1.5"
+              role="tablist"
+              aria-label="Featured silhouettes"
+            >
               {PREMIUM_VAULT_SNEAKERS.map((item, idx) => (
-                <div
+                <button
+                  type="button"
                   key={item.id}
-                  className="flex-1 py-1 flex flex-col"
-                  aria-label={item.name}
+                  onClick={() => setCurrentIndex(idx)}
+                  className="flex-1 py-1.5 flex flex-col cursor-pointer focus:outline-none group/indicator"
+                  role="tab"
+                  aria-selected={idx === currentIndex}
+                  aria-label={`Switch to silhouette ${idx + 1}: ${item.name}`}
                 >
-                  <div className="h-1 w-full bg-zinc-200 rounded-full overflow-hidden">
+                  <div className="h-1 w-full bg-zinc-200 rounded-full overflow-hidden group-hover/indicator:bg-zinc-300 transition-colors">
                     <div
                       className={`h-full bg-zinc-950 transition-all duration-500 rounded-full ${
                         idx === currentIndex ? 'w-full' : 'w-0'
                       }`}
                     />
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>

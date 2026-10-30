@@ -1,6 +1,14 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useMemo, useRef } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useSyncExternalStore,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import type { CartItem } from '@/types';
 import { getUser } from '@/features/auth/actions';
@@ -31,19 +39,56 @@ interface CartContextValue {
 const CartContext = createContext<CartContextValue | null>(null);
 
 const STORAGE_KEY = 'sneakerdrop_cart_v1';
+const EMPTY_CART: CartItem[] = [];
 
-function getInitialCart(): CartItem[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) return parsed;
+let memoryItems: CartItem[] = EMPTY_CART;
+let isStorageLoaded = false;
+const listeners = new Set<() => void>();
+
+function notify() {
+  listeners.forEach((listener) => listener());
+}
+
+function getCartSnapshot(): CartItem[] {
+  if (!isStorageLoaded && typeof window !== 'undefined') {
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          memoryItems = parsed;
+        }
+      }
+    } catch {
+      // ignore
+    } finally {
+      isStorageLoaded = true;
     }
-  } catch {
-    // ignore
   }
-  return [];
+  return memoryItems;
+}
+
+function getServerSnapshot(): CartItem[] {
+  return EMPTY_CART;
+}
+
+function subscribeCart(callback: () => void) {
+  listeners.add(callback);
+  return () => {
+    listeners.delete(callback);
+  };
+}
+
+function saveCart(newItems: CartItem[]) {
+  memoryItems = newItems;
+  if (typeof window !== 'undefined') {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newItems));
+    } catch {
+      // ignore
+    }
+  }
+  notify();
 }
 
 export function CartProvider({
@@ -54,11 +99,10 @@ export function CartProvider({
   initialUser?: AuthUserSummary | null;
 }) {
   const router = useRouter();
-  const [items, setItems] = useState<CartItem[]>(getInitialCart);
+  const items = useSyncExternalStore(subscribeCart, getCartSnapshot, getServerSnapshot);
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<AuthUserSummary | null>(initialUser);
   const [prevInitialUser, setPrevInitialUser] = useState<AuthUserSummary | null>(initialUser);
-  const isFirstRender = useRef(true);
 
   // Sync client-side user during render if initialUser prop changes
   if (prevInitialUser !== initialUser) {
@@ -82,85 +126,84 @@ export function CartProvider({
   const isLoggedIn = !!user;
 
   // Protect action: if not logged in, redirect directly to sign in page
-  const requireAuth = (redirectTo?: string): boolean => {
-    if (!user) {
-      const target =
-        redirectTo ||
-        (typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/');
-      router.push(`/login?redirectTo=${encodeURIComponent(target)}`);
-      return false;
-    }
-    return true;
-  };
+  const requireAuth = useCallback(
+    (redirectTo?: string): boolean => {
+      if (!user) {
+        const target =
+          redirectTo ||
+          (typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/');
+        router.push(`/login?redirectTo=${encodeURIComponent(target)}`);
+        return false;
+      }
+      return true;
+    },
+    [user, router]
+  );
 
-  // Save to localStorage on changes after initial mount
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch {
-      // ignore
-    }
-  }, [items]);
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
+  const toggleCart = useCallback(() => setIsOpen((prev) => !prev), []);
 
-  const openCart = () => setIsOpen(true);
-  const closeCart = () => setIsOpen(false);
-  const toggleCart = () => setIsOpen((prev) => !prev);
+  const addItem = useCallback(
+    (
+      newItem: Omit<CartItem, 'quantity'> & { quantity?: number },
+      openDrawer: boolean = false
+    ): boolean => {
+      // Security check: require sign-in before adding to cart
+      if (!user) {
+        requireAuth();
+        return false;
+      }
 
-  const addItem = (
-    newItem: Omit<CartItem, 'quantity'> & { quantity?: number },
-    openDrawer: boolean = false
-  ): boolean => {
-    // Security check: require sign-in before adding to cart
-    if (!user) {
-      requireAuth();
-      return false;
-    }
-
-    const qty = newItem.quantity ?? 1;
-    setItems((current) => {
-      const existingIndex = current.findIndex(
+      const qty = newItem.quantity ?? 1;
+      const existingIndex = items.findIndex(
         (i) => i.id === newItem.id && i.size === newItem.size
       );
+      let updated: CartItem[];
       if (existingIndex > -1) {
-        const updated = [...current];
+        updated = [...items];
         updated[existingIndex] = {
           ...updated[existingIndex],
           quantity: updated[existingIndex].quantity + qty,
         };
-        return updated;
+      } else {
+        updated = [...items, { ...newItem, quantity: qty }];
       }
-      return [...current, { ...newItem, quantity: qty }];
-    });
+      saveCart(updated);
 
-    if (openDrawer) {
-      setIsOpen(true);
-    }
-    return true;
-  };
+      if (openDrawer) {
+        setIsOpen(true);
+      }
+      return true;
+    },
+    [user, items, requireAuth]
+  );
 
-  const removeItem = (id: string, size: string) => {
-    setItems((current) => current.filter((i) => !(i.id === id && i.size === size)));
-  };
+  const removeItem = useCallback(
+    (id: string, size: string) => {
+      saveCart(items.filter((i) => !(i.id === id && i.size === size)));
+    },
+    [items]
+  );
 
-  const updateQuantity = (id: string, size: string, quantity: number) => {
-    if (quantity <= 0) {
-      removeItem(id, size);
-      return;
-    }
-    setItems((current) =>
-      current.map((i) =>
-        i.id === id && i.size === size ? { ...i, quantity } : i
-      )
-    );
-  };
+  const updateQuantity = useCallback(
+    (id: string, size: string, quantity: number) => {
+      if (quantity <= 0) {
+        removeItem(id, size);
+        return;
+      }
+      saveCart(
+        items.map((i) =>
+          i.id === id && i.size === size ? { ...i, quantity } : i
+        )
+      );
+    },
+    [items, removeItem]
+  );
 
-  const clearCart = () => {
-    setItems([]);
-  };
+  const clearCart = useCallback(() => {
+    saveCart([]);
+  }, []);
 
   const totalCount = useMemo(
     () => items.reduce((sum, item) => sum + item.quantity, 0),
@@ -172,34 +215,48 @@ export function CartProvider({
     [items]
   );
 
-  return (
-    <CartContext.Provider
-      value={{
-        items,
-        isOpen,
-        totalCount,
-        subtotal,
-        isLoggedIn,
-        user,
-        requireAuth,
-        openCart,
-        closeCart,
-        toggleCart,
-        addItem,
-        removeItem,
-        updateQuantity,
-        clearCart,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
+  const value = useMemo(
+    () => ({
+      items,
+      isOpen,
+      totalCount,
+      subtotal,
+      isLoggedIn,
+      user,
+      requireAuth,
+      openCart,
+      closeCart,
+      toggleCart,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+    }),
+    [
+      items,
+      isOpen,
+      totalCount,
+      subtotal,
+      isLoggedIn,
+      user,
+      requireAuth,
+      openCart,
+      closeCart,
+      toggleCart,
+      addItem,
+      removeItem,
+      updateQuantity,
+      clearCart,
+    ]
   );
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
 export function useCart() {
   const context = useContext(CartContext);
   if (!context) {
-    // Safe fallback for components rendered outside provider in isolated tests
+    // Safe fallback for isolated unit tests
     return {
       items: [],
       isOpen: false,

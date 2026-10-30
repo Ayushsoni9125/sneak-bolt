@@ -153,7 +153,7 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
               >
                 <ShoppingBag className="h-3.5 w-3.5" />
                 <span>CART</span>
-                <span className="font-bold text-emerald-400">[{totalCount}]</span>
+                <span suppressHydrationWarning className="font-bold text-emerald-400">[{totalCount}]</span>
               </button>
 
               {/* Mobile Menu Button */}
