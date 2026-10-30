@@ -14,23 +14,23 @@ export function Footer() {
               <span className="font-black text-base sm:text-lg tracking-[0.2em] text-zinc-950 uppercase">
                 SNEAKERDROP
               </span>
-              <span className="block text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+              <span className="block text-[10px] font-mono tracking-widest text-zinc-600 uppercase">
                 ARCHIVE // EDITION 2026
               </span>
             </Link>
 
-            <p className="text-xs text-zinc-500 leading-relaxed max-w-sm mb-6 font-sans">
+            <p className="text-xs text-zinc-600 leading-relaxed max-w-sm mb-6 font-sans">
               Independent limited-edition sneaker showcase and drop archive. Handcrafted from luxury leathers, custom vulcanized cupsoles, and serialized NFC authenticity ledger tags.
             </p>
 
-            <div className="text-[11px] font-mono tracking-widest text-zinc-400 uppercase">
+            <div className="text-[11px] font-mono tracking-widest text-zinc-600 uppercase">
               CIVITANOVA MARCHE • FLORENCE • OKAYAMA
             </div>
           </div>
 
           {/* Column 1: Drops */}
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400 mb-4 font-bold">
+            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-600 mb-4 font-bold">
               DIRECTORY
             </p>
             <ul className="space-y-2.5 text-xs font-mono tracking-wider">
@@ -54,7 +54,7 @@ export function Footer() {
 
           {/* Column 2: Account */}
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400 mb-4 font-bold">
+            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-600 mb-4 font-bold">
               COLLECTOR
             </p>
             <ul className="space-y-2.5 text-xs font-mono tracking-wider">
@@ -78,10 +78,10 @@ export function Footer() {
 
           {/* Column 3: Logistics */}
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400 mb-4 font-bold">
+            <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-600 mb-4 font-bold">
               ASSURANCE
             </p>
-            <ul className="space-y-2.5 text-xs font-mono tracking-wider text-zinc-500">
+            <ul className="space-y-2.5 text-xs font-mono tracking-wider text-zinc-600">
               <li>
                 <span className="uppercase">NFC CRYPTO TAGS</span>
               </li>
@@ -99,7 +99,7 @@ export function Footer() {
         </div>
 
         {/* Bottom copyright bar */}
-        <div className="mt-14 pt-8 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-mono tracking-widest uppercase text-zinc-400">
+        <div className="mt-14 pt-8 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-mono tracking-widest uppercase text-zinc-600">
           <p>© {year} SNEAKERDROP ARCHIVE INC. ALL RIGHTS RESERVED.</p>
           <p>AUTHENTICATED LUXURY FOOTWEAR PLATFORM</p>
         </div>
