@@ -56,7 +56,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
       <Link
         href={`/sneakers/${product.slug}`}
         className="block w-full focus:outline-none"
-        aria-label={`View ${product.name}`}
+        aria-label={`${product.name} - View ${product.name} sneaker details`}
       >
         {/* Clean Floating Sneaker Canvas */}
         <div className="relative aspect-4/3 w-full flex items-center justify-center p-2 sm:p-4">

@@ -129,7 +129,7 @@ export function HeroSection() {
           {/* Left Column: Architectural Statement */}
           <div className="lg:col-span-6 flex flex-col justify-center order-2 lg:order-1">
             {/* Tag */}
-            <div className="flex items-center gap-2.5 mb-4 sm:mb-5 text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-400 uppercase">
+            <div className="flex items-center gap-2.5 mb-4 sm:mb-5 text-[10px] sm:text-[11px] font-mono tracking-[0.25em] text-zinc-600 uppercase">
               <span className="h-1.5 w-1.5 rounded-full bg-zinc-950" />
               <span>COLLECTION 2026 // LIMITED PRODUCTION</span>
             </div>
@@ -138,7 +138,7 @@ export function HeroSection() {
             <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tight text-zinc-950 uppercase leading-[0.98] mb-4 sm:mb-6">
               ARCHITECTURAL
               <br />
-              <span className="text-zinc-400">FOOTWEAR.</span>
+              <span className="text-zinc-500">FOOTWEAR.</span>
               <br />
               MADE IN ITALY.
             </h1>
@@ -168,18 +168,18 @@ export function HeroSection() {
             </div>
 
             {/* Technical Indices */}
-            <div className="grid grid-cols-3 divide-x divide-zinc-200 border-t border-zinc-200 pt-5 sm:pt-6 text-[9px] sm:text-[10px] font-mono tracking-widest uppercase text-zinc-500">
+            <div className="grid grid-cols-3 divide-x divide-zinc-200 border-t border-zinc-200 pt-5 sm:pt-6 text-[9px] sm:text-[10px] font-mono tracking-widest uppercase text-zinc-600">
               <div className="pr-2 sm:pr-4">
                 <span className="block text-zinc-950 font-bold text-xs sm:text-sm">12</span>
-                <span className="text-zinc-400">SILHOUETTES</span>
+                <span className="text-zinc-600">SILHOUETTES</span>
               </div>
               <div className="px-2 sm:px-4">
                 <span className="block text-zinc-950 font-bold text-xs sm:text-sm">500</span>
-                <span className="text-zinc-400 truncate block">BATCH LIMIT</span>
+                <span className="text-zinc-600 truncate block">BATCH LIMIT</span>
               </div>
               <div className="pl-2 sm:pl-4">
                 <span className="block text-zinc-950 font-bold text-xs sm:text-sm">100%</span>
-                <span className="text-zinc-400 truncate block">CALFSKIN</span>
+                <span className="text-zinc-600 truncate block">CALFSKIN</span>
               </div>
             </div>
           </div>
@@ -187,14 +187,14 @@ export function HeroSection() {
           {/* Right Column: Heroic Floating Sneaker with Hands-Free Self-Changing Rotation (Zero Grid) */}
           <div className="lg:col-span-6 relative flex flex-col items-center justify-center order-1 lg:order-2">
             {/* Upper Silhouette Live Status */}
-            <div className="w-full max-w-md flex items-center justify-between mb-2 px-2 text-[10px] font-mono uppercase tracking-widest text-zinc-400">
+            <div className="w-full max-w-md flex items-center justify-between mb-2 px-2 text-[10px] font-mono uppercase tracking-widest text-zinc-600">
               <div className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span className="text-zinc-950 font-bold">
                   {`SILHOUETTE 0${currentIndex + 1} // 0${PREMIUM_VAULT_SNEAKERS.length}`}
                 </span>
               </div>
-              <span className="text-zinc-400 text-[9px] tracking-wider truncate max-w-[200px] text-right">
+              <span className="text-zinc-600 text-[9px] tracking-wider truncate max-w-[200px] text-right">
                 {currentSneaker.tag}
               </span>
             </div>
@@ -204,7 +204,7 @@ export function HeroSection() {
               <Link
                 href={`/sneakers/${currentSneaker.slug}`}
                 className="group relative w-full flex flex-col items-center justify-center cursor-pointer select-none"
-                aria-label={`View ${currentSneaker.name}`}
+                aria-label={`${currentSneaker.name} - View silhouette details`}
               >
                 {/* Floating Sneaker Image Container with Smooth Crossfade */}
                 <div className="relative w-full h-[240px] sm:h-[390px] lg:h-[460px] flex items-center justify-center">

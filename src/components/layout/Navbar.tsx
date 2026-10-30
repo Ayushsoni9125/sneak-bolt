@@ -149,7 +149,7 @@ export function Navbar({ isAdmin, isLoggedIn }: NavbarProps) {
                 onClick={openCart}
                 id="cart-trigger-btn"
                 className="flex items-center gap-2 px-3 py-1.5 bg-zinc-950 text-white hover:bg-zinc-800 border border-zinc-950 text-xs font-mono tracking-[0.15em] uppercase transition-colors cursor-pointer"
-                aria-label={`Open shopping cart with ${totalCount} items`}
+                aria-label={`CART [${totalCount}] - Open shopping bag`}
               >
                 <ShoppingBag className="h-3.5 w-3.5" />
                 <span>CART</span>
